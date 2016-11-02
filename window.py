@@ -20,7 +20,7 @@ class direction(Frame):
 
 class clock(Frame):
     def __init__(self, master):
-        Frame.__init__(self, master, bg = 'blue')
+        Frame.__init__(self, master, bg = 'white')
         self.clockText = Label(self, font=('Helvetica',100), fg="blue", bg="white",text='TIME')
         self.clockText.pack(side = TOP, anchor = E)
     def getTime(self):
@@ -29,7 +29,7 @@ class clock(Frame):
 
 class weather(Frame):
     def __init__(self, master):
-        Frame.__init__(self, master, bg = 'blue')
+        Frame.__init__(self, master, bg = 'white')
         #CREATE TEMP LABEL
         self.weatherTemp = Label(self, font=('Helvetica',100), fg="black", bg="white",text='TEMP')
         self.weatherTemp.pack(side = TOP, anchor = E)
@@ -57,7 +57,7 @@ class weather(Frame):
     def updateWeather(self):
             processedData = self.getWeather()
             #UPDATE TEMPERATURE STRING
-            currentTemp = str(processedData[0]) + ' F'
+            currentTemp = str(processedData[0]) +  ' F'
             self.weatherTemp.config(text = currentTemp)
             #UPDATE ICON PICTURE
             iconURL = 'http://openweathermap.org/img/w/' + processedData[2] + '.png'
