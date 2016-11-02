@@ -14,14 +14,14 @@ direction = 'UP'
 
 class direction(Frame):
     def __init__(self, master):
-        Frame.__init__(self, master, bg = 'white')
-        self.dirText = Label(self, font=('Helvetica',100), fg="black", bg="white",text='UP')
+        Frame.__init__(self, master, bg = 'black')
+        self.dirText = Label(self, font=('Helvetica',100), fg="blue", bg="black",text='UP')
         self.dirText.pack(side = TOP, anchor = E)
 
 class clock(Frame):
     def __init__(self, master):
-        Frame.__init__(self, master, bg = 'white')
-        self.clockText = Label(self, font=('Helvetica',100), fg="blue", bg="white",text='TIME')
+        Frame.__init__(self, master, bg = 'black')
+        self.clockText = Label(self, font=('Helvetica',100), fg="blue", bg="black",text='TIME')
         self.clockText.pack(side = TOP, anchor = E)
     def getTime(self):
         currentTime = time.strftime('%I: %M %p')
@@ -29,18 +29,18 @@ class clock(Frame):
 
 class weather(Frame):
     def __init__(self, master):
-        Frame.__init__(self, master, bg = 'white')
+        Frame.__init__(self, master, bg = 'black')
         #CREATE TEMP LABEL
-        self.weatherTemp = Label(self, font=('Helvetica',100), fg="black", bg="white",text='TEMP')
-        self.weatherTemp.pack(side = TOP, anchor = E)
+        self.weatherTemp = Label(self, font=('Helvetica',100), fg="blue", bg="black",text='TEMP')
+        self.weatherTemp.pack(side = TOP, anchor = NE)
+        #CREATE DESCRIPTION LABEL
+        self.weatherDescription = Label(self, font=('Helvetica',40), fg="blue", bg="black",text='Description')
+        self.weatherDescription.pack(side = TOP, anchor = NE)
         #CREATE IMAGE LABEL
         pic = Image.open('weather_placeholder.png')
         self.weatherImage = ImageTk.PhotoImage(pic)
         self.weatherPane = Label(self, image = self.weatherImage)
-        self.weatherPane.pack(side = BOTTOM, anchor = E)
-        #CREATE DESCRIPTION LABEL
-        self.weatherDescription = Label(self, font=('Helvetica',40), fg="black", bg="white",text='Description')
-        self.weatherDescription.pack(side = TOP, anchor = E)
+        self.weatherPane.pack(side = BOTTOM, anchor = NE)
         #CREATE REQUESTS OBJECT
         self.request = requests
     def getWeather(self):
@@ -76,21 +76,21 @@ class fullWindow:
         self.rootWin.attributes("-fullscreen", True)
         self.time = time.time() - 5*60; #this makes the loop below update weather right away
 
-        #DIRECTION
-        self.leftFrame = Frame(self.rootWin, background = 'white') #create frame for direction label
+        #SETUP FRAMES
+        self.leftFrame = Frame(self.rootWin, background = 'black') #create first frame
         self.leftFrame.pack(expand=False, fill = 'both', side = LEFT) #put frame against LEFT side, fill frame in x and y directions
+        self.rightFrame = Frame(self.rootWin, background = 'black') #create a second frame
+        self.rightFrame.pack(expand=False, fill = 'both', side = RIGHT) #put frame against RIGHT side, fill frame in x and y directions
+        
+        #DIRECTION
         self.direction = direction(self.leftFrame) #create direction object in leftFrame
-        self.direction.pack(side = TOP) #put direction object in frame (against LEFT side)
+        self.direction.pack(side = BOTTOM, anchor = SW) #put direction object in frame (against LEFT side)
 
         #CLOCK
-        self.rightFrame = Frame(self.rootWin, background = 'white') #create frame for clock label
-        self.rightFrame.pack(expand=False, fill = 'both', side = LEFT) #put frame against RIGHT side, fill frame in x and y directions
-        self.clock = clock(self.rightFrame) #create clock object in rightFrame
-        self.clock.pack(side = BOTTOM ) #put clock object in frame (against RIGHT side)                                
+        self.clock = clock(self.leftFrame) #create clock object in rightFrame
+        self.clock.pack(side = TOP , anchor = NW) #put clock object in frame (against RIGHT side)                                
 
         #WEATHER
-        self.rightFrame = Frame(self.rootWin, background = 'white') #create frame for clock label
-        self.rightFrame.pack(expand=False, fill = 'both', side = RIGHT) #put frame against RIGHT side, fill frame in x and y directions
         self.weather = weather(self.rightFrame) #create clock object in rightFrame
         self.weather.pack(side = TOP ) #put clock object in frame (against RIGHT side)        
 
