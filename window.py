@@ -45,8 +45,8 @@ class weather(Frame):
         self.request = requests
     def getWeather(self):
         self.cityName = 'Needham'
-        APPID = '11dee608927c6bc5f293a9ee96e5ad91'
-        weatherURL = 'http://api.openweathermap.org/data/2.5/weather?q=' + self.cityName + '&APPID=' + APPID 
+        weatherAPPID = '11dee608927c6bc5f293a9ee96e5ad91'
+        weatherURL = 'http://api.openweathermap.org/data/2.5/weather?q=' + self.cityName + '&APPID=' + weatherAPPID 
         weatherData = self.request.get(weatherURL)
         weatherJSON = weatherData.json()
         weatherTemp = weatherJSON['main']['temp'] #example: 282.56 -- in Kelvin
@@ -68,6 +68,30 @@ class weather(Frame):
             #UPDATE DESCRIPTION
             currentDesc = str(processedData[1])
             self.weatherDescription.config(text = currentDesc)
+
+class  news(Frame):
+    def __init__(self, master):
+        Frame.__init__(self, master, bg = 'black')
+        #CREATE TITLE LABEL
+        self.trendingNews = Label(self, font=('Helvetica',40), fg="blue", bg="black",text='Trending News')
+        self.trendingNews.pack(side = TOP, anchor = E)
+##        self.headlines = Message(self, font=('Helvetica',15), fg="blue", bg="black",text='Headlines')
+        self.headlines = Label(self, font=('Helvetica',15), fg="blue", bg="black",text='Headlines')
+        self.headlines.pack(side = LEFT, anchor = SE)
+        self.request = requests
+    def getNews(self):
+        newsAPPID = '2732feee8baf45db8d5022a47ca5c4fe'
+        source = 'cnn'
+        sortBy = 'top'
+        newsURL = 'https://newsapi.org/v1/articles?source=' + source + '&sortBy=' + sortBy + '&apiKey=' + newsAPPID
+        newsData = self.request.get(newsURL)
+        newsJSON = newsData.json()
+        newsHeadlines = newsJSON['articles']
+        headlinesString = ''
+        for article in newsHeadlines[1:4]: #first item is repeated, grab first three unique headlines
+            headlinesString += (article['title'] + '\n')
+        self.headlines.config(text = headlinesString)
+        print headlinesString
 
 class fullWindow:
     def __init__(self):
@@ -92,7 +116,11 @@ class fullWindow:
 
         #WEATHER
         self.weather = weather(self.rightFrame) #create clock object in rightFrame
-        self.weather.pack(side = TOP ) #put clock object in frame (against RIGHT side)        
+        self.weather.pack(side = TOP ) #put clock object in frame (against RIGHT side)
+
+        #NEWS
+        self.news = news(self.rightFrame)
+        self.news.pack(side = BOTTOM)
 
 if __name__ == '__main__':
     sung = fullWindow()
@@ -108,4 +136,6 @@ if __name__ == '__main__':
         #WEATHER UPDATE
         if time.time() - sung.time > 5*60: #if it's been 5 minutes, check weather again
             sung.weather.updateWeather()
+            sung.news.getNews()
             sung.time = time.time()
+            
