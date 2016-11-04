@@ -90,8 +90,14 @@ class  news(Frame):
         headlinesString = ''
         for article in newsHeadlines[1:4]: #first item is repeated, grab first three unique headlines
             headlinesString += (article['title'] + '\n')
-        self.headlines.config(text = headlinesString)
-        print headlinesString
+        return headlinesString
+    def updateNews(self):
+        gatheredData = self.getNews()
+        self.headlines.config(text = gatheredData)
+
+class calendar(Frame):
+    def __init__(self, master):
+        Frame.__init__(self, master, bg = 'black')
 
 class fullWindow:
     def __init__(self):
@@ -122,6 +128,10 @@ class fullWindow:
         self.news = news(self.rightFrame)
         self.news.pack(side = BOTTOM)
 
+        #CALENDAR
+        self.calendar = calendar(self.leftFrame)
+        self.calendar.pack(side = BOTTOM)
+
 if __name__ == '__main__':
     sung = fullWindow()
     while True:
@@ -136,6 +146,6 @@ if __name__ == '__main__':
         #WEATHER UPDATE
         if time.time() - sung.time > 5*60: #if it's been 5 minutes, check weather again
             sung.weather.updateWeather()
-            sung.news.getNews()
+            sung.news.updateNews()
             sung.time = time.time()
             
