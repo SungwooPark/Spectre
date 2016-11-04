@@ -5,6 +5,8 @@ import requests
 from PIL import ImageTk, Image
 from cStringIO import StringIO
 from io import BytesIO
+from APPID_keys import newsAPPID, weatherAPPID
+
 
 #Somehow getting a direction input from Arduino, ME stuff thing
 direction = 'UP'
@@ -45,7 +47,6 @@ class weather(Frame):
         self.request = requests
     def getWeather(self):
         self.cityName = 'Needham'
-        weatherAPPID = '11dee608927c6bc5f293a9ee96e5ad91'
         weatherURL = 'http://api.openweathermap.org/data/2.5/weather?q=' + self.cityName + '&APPID=' + weatherAPPID 
         weatherData = self.request.get(weatherURL)
         weatherJSON = weatherData.json()
@@ -80,7 +81,6 @@ class  news(Frame):
         self.headlines.pack(side = LEFT, anchor = SE)
         self.request = requests
     def getNews(self):
-        newsAPPID = '2732feee8baf45db8d5022a47ca5c4fe'
         source = 'cnn'
         sortBy = 'top'
         newsURL = 'https://newsapi.org/v1/articles?source=' + source + '&sortBy=' + sortBy + '&apiKey=' + newsAPPID
