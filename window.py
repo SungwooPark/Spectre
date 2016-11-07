@@ -131,6 +131,18 @@ class fullWindow:
         #CALENDAR
         self.calendar = calendar(self.leftFrame)
         self.calendar.pack(side = BOTTOM)
+    def update(self):
+    	#DIRECTION UPDATE
+##        sung.direction.dirText.config(text = read_serial)
+    	#TIME UPDATE
+    	currentTime = self.clock.getTime()
+        sung.clock.clockText.config(text = currentTime)
+        #WEATHER UPDATE
+        if time.time() - self.time > 5*60: #if it's been 5 minutes, check weather again
+            self.weather.updateWeather()
+            self.news.updateNews()
+            self.time = time.time()
+
 
 if __name__ == '__main__':
     sung = fullWindow()
@@ -138,14 +150,5 @@ if __name__ == '__main__':
 ##        read_serial = str(ser.readline())
         sung.rootWin.update_idletasks()
         sung.rootWin.update()
-        #DIRECTION UPDATE
-##        sung.direction.dirText.config(text = read_serial)
-        #CLOCK UPDATE
-        currentTime = sung.clock.getTime()
-        sung.clock.clockText.config(text = currentTime)
-        #WEATHER UPDATE
-        if time.time() - sung.time > 5*60: #if it's been 5 minutes, check weather again
-            sung.weather.updateWeather()
-            sung.news.updateNews()
-            sung.time = time.time()
-            
+        sung.update()
+
