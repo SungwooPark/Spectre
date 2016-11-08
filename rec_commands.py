@@ -7,13 +7,13 @@ def get_microphone_output(r):
 	'''
 	with sr.Microphone() as source:
 		r.adjust_for_ambient_noise(source)
-		print "Which city's weather information do you want to get?"
+		print "How can I help you?"
 		audio = r.listen(source)
 
 
 	try:
 		return r.recognize_google(audio)
 	except sr.UnknownValueError:
-		return "Nada"
+		return "Nothing"
 	except sr.RequestError as e:
 		return e
