@@ -8,6 +8,7 @@ from io import BytesIO
 from APPID_keys import newsAPPID, weatherAPPID
 from rec_commands import get_microphone_output #speech rec program
 import speech_recognition as sr
+from threading import Thread
 
 #Somehow getting a direction input from Arduino, ME stuff thing
 direction = 'UP'
@@ -71,7 +72,7 @@ class weather(Frame):
 			currentDesc = str(processedData[1])
 			self.weatherDescription.config(text = currentDesc)
 
-class  news(Frame):
+class news(Frame):
 	def __init__(self, master):
 		Frame.__init__(self, master, bg = 'black')
 		#CREATE TITLE LABEL
@@ -96,9 +97,28 @@ class  news(Frame):
 		gatheredData = self.getNews()
 		self.headlines.config(text = gatheredData)
 
-class calendar(Frame):
+class calendar(Frame): #NOT IMPLEMENTED YET
 	def __init__(self, master):
 		Frame.__init__(self, master, bg = 'black')
+		self.testing = Label(self, font=('Helvetica',40), fg="blue", bg="black",text='CITY NAME')
+		self.testing.pack(side = TOP, anchor = E)
+
+class speechListener(Thread): #constantly checking on its own, outside of main thread
+	def __init__(self):
+		Thread.__init__(self)
+		self.speech_rec = sr.Recognizer() #initialize speech recognition object
+		self.daemon = True #speechListener quits when fullWindow quits
+		self.start()
+	def run(self): #threading automatically calls the run method
+		while True:
+			command = get_microphone_output(self.speech_rec)
+			if command == "City":
+				city_name = get_microphone_output(self.speech_rec)
+				if city_name != "Nada":
+					print "hi********"
+					# self.calendar.config(text = city_name)
+			print command
+
 
 class fullWindow:
 	def __init__(self):
@@ -106,7 +126,6 @@ class fullWindow:
 		self.rootWin.configure(background='black')
 		self.rootWin.attributes("-fullscreen", True)
 		self.time = time.time() - 5*60; #this makes the loop below update weather right away
-		self.speech_rec = sr.Recognizer() #initialize speech recognition object
 		self.rootWin.bind('<Return>',self.escape) #exits program
 
 		#SETUP FRAMES
@@ -135,6 +154,10 @@ class fullWindow:
 		self.calendar = calendar(self.leftFrame)
 		self.calendar.pack(side = BOTTOM)
 
+		#SPEECH
+
+		self.speech = speechListener()
+
 	def update(self): #update widgets
 		#DIRECTION UPDATE
 ##        sung.direction.dirText.config(text = read_serial)
@@ -146,12 +169,10 @@ class fullWindow:
 			self.weather.updateWeather()
 			self.news.updateNews()
 			self.time = time.time()
-		#SPEECH REC CHECK
-		# command = get_microphone_output(self.speech_rec)
-		# print command
 
 	def escape(self, event): #exit tkinter program
 		self.rootWin.destroy()
+		self
 
 if __name__ == '__main__':
 	sung = fullWindow()

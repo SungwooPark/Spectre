@@ -14,6 +14,6 @@ def get_microphone_output(r):
 	try:
 		return r.recognize_google(audio)
 	except sr.UnknownValueError:
-		return "Google doesn't understand audio"
+		return "Nada"
 	except sr.RequestError as e:
 		return e
