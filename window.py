@@ -11,9 +11,6 @@ import speech_recognition as sr
 from threading import Thread
 from Queue import Queue
 
-#Somehow getting a direction input from Arduino, ME stuff thing
-direction = 'UP'
-
 # Set up serial interface, at 9600 bps
 ##ser = serial.Serial('/dev/ttyUSB0',9600)
 
@@ -22,6 +19,7 @@ class direction(Frame):
 		Frame.__init__(self, master, bg = 'black')
 		self.dirText = Label(self, font=('Helvetica',100), fg="blue", bg="black",text='UP')
 		self.dirText.pack(side = TOP, anchor = E)
+		self.direction = 0 #0 is closed, 1 is open
 
 class clock(Frame):
 	def __init__(self, master):
@@ -48,18 +46,18 @@ class weather(Frame):
 		self.weatherPane.pack(side = BOTTOM, anchor = NE)
 		#CREATE REQUESTS OBJECT
 		self.request = requests
-	def getWeather(self):
-		self.cityName = 'Needham'
+	def getWeather(self, city_name):
+		self.cityName = city_name
 		weatherURL = 'http://api.openweathermap.org/data/2.5/weather?q=' + self.cityName + '&APPID=' + weatherAPPID 
 		weatherData = self.request.get(weatherURL)
 		weatherJSON = weatherData.json()
 		weatherTemp = weatherJSON['main']['temp'] #example: 282.56 -- in Kelvin
 		weatherFahr = int(round((weatherTemp - 273)*9/5 + 32)) #convert to degrees Fahrenheit
 		weatherSky = weatherJSON['weather'][0]['description'] #example: 'Clear', 'Rain', 'Snow'
-		weatherIconID = weatherJSON['weather'][0]['icon'] #returns id of icon (example: 'Old'?)
+		weatherIconID = weatherJSON['weather'][0]['icon'] #returns id of icon (example: 'O1d'?)
 		return weatherFahr, weatherSky, weatherIconID
-	def updateWeather(self):
-			processedData = self.getWeather()
+	def updateWeather(self, city_name):
+			processedData = self.getWeather(city_name)
 			#UPDATE TEMPERATURE STRING
 			currentTemp = str(processedData[0]) +  ' F'
 			self.weatherTemp.config(text = currentTemp)
@@ -79,7 +77,6 @@ class news(Frame):
 		#CREATE TITLE LABEL
 		self.trendingNews = Label(self, font=('Helvetica',40), fg="blue", bg="black",text='Trending News')
 		self.trendingNews.pack(side = TOP, anchor = E)
-##        self.headlines = Message(self, font=('Helvetica',15), fg="blue", bg="black",text='Headlines')
 		self.headlines = Label(self, font=('Helvetica',15), fg="blue", bg="black",text='Headlines')
 		self.headlines.pack(side = LEFT, anchor = SE)
 		self.request = requests
@@ -117,11 +114,17 @@ class speechListener(Thread): #constantly checking on its own, outside of main t
 			print count
 			count += 1
 			command = get_microphone_output(self.speech_rec)
+			print command
 			if "weather" in command: #"get weather for Boston"
 				split_command = command.split(" ")
 				city_name = split_command[len(split_command)-1] #assumes city name is last word
 				self.speechQueue.put(("weather", city_name)) #assumes city is one word
-
+			if "open" in command:
+				self.speechQueue.put(("direction","open"))
+				self.direction.direction = 1
+			elif "shut" in command:
+				self.speechQueue.put(("direction","close"))
+				self.direction.direction = 0
 
 class fullWindow():
 	def __init__(self):
@@ -144,6 +147,7 @@ class fullWindow():
 		self.clock = clock(self.leftFrame) #create clock object in rightFrame
 		self.clock.pack(side = TOP , anchor = NW) #put clock object in frame (against RIGHT side)
 		#WEATHER
+		self.city_name = "Needham"
 		self.weather = weather(self.rightFrame) #create clock object in rightFrame
 		self.weather.pack(side = TOP ) #put clock object in frame (against RIGHT side)
 		#NEWS
@@ -158,20 +162,26 @@ class fullWindow():
 
 	def update(self): #update widgets
 		#DIRECTION UPDATE
-##        sung.direction.dirText.config(text = read_serial)
+##        self.direction.dirText.config(text = read_serial)
 		#TIME UPDATE
 		currentTime = self.clock.getTime()
 		self.clock.clockText.config(text = currentTime)
-		#WEATHER UPDATE
-		if time.time() - self.time > 5*60: #if it's been 5 minutes, check weather again
-			self.weather.updateWeather()
-			self.news.updateNews()
-			self.time = time.time()
 		if not self.queue.empty():
 			command_type, command_val = self.queue.get()
 			print command_type, command_val
+			if command_type == "direction":
+				self.direction.dirText.config(text = command_val)
+				self.direction.direction
+				#SEND DIRECTION TO SERIAL
+			if command_type == "weather":
+				self.city_name = command_val
+				self.time = time.time() - 5*61 #make change now by changing time
 			self.speechText.speechText.config(text = command_val)
-
+		#WEATHER UPDATE
+		if time.time() - self.time > 5*60: #if it's been 5 minutes, check weather again
+			self.weather.updateWeather(self.city_name)
+			self.news.updateNews()
+			self.time = time.time()
 
 	def escape(self, event): #exit tkinter program
 		self.rootWin.destroy()
