@@ -20,6 +20,8 @@ class direction(Frame):
 		self.dirText = Label(self, font=('Helvetica',100), fg="blue", bg="black",text='UP')
 		self.dirText.pack(side = TOP, anchor = E)
 		self.direction = 0 #0 is closed, 1 is open
+	def sendToArduino(self):
+		#write to Arduino
 
 class clock(Frame):
 	def __init__(self, master):
