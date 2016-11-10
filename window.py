@@ -17,11 +17,12 @@ from Queue import Queue
 class direction(Frame):
 	def __init__(self, master):
 		Frame.__init__(self, master, bg = 'black')
-		self.dirText = Label(self, font=('Helvetica',100), fg="blue", bg="black",text='UP')
+		self.dirText = Label(self, font=('Helvetica',100), fg="blue", bg="black",text='Closed')
 		self.dirText.pack(side = TOP, anchor = E)
 		self.direction = 0 #0 is closed, 1 is open
 	def sendToArduino(self):
-		#write to Arduino
+		pass
+		# write to Arduino
 
 class clock(Frame):
 	def __init__(self, master):
@@ -123,10 +124,13 @@ class speechListener(Thread): #constantly checking on its own, outside of main t
 				self.speechQueue.put(("weather", city_name)) #assumes city is one word
 			if "open" in command:
 				self.speechQueue.put(("direction","open"))
-				self.direction.direction = 1
 			elif "shut" in command:
-				self.speechQueue.put(("direction","close"))
-				self.direction.direction = 0
+				self.speechQueue.put(("direction","closed"))
+
+class chatBot(Thread):
+	def __init__(self, queue):
+		Thread.__init__(self)
+
 
 class fullWindow():
 	def __init__(self):
@@ -161,6 +165,8 @@ class fullWindow():
 		#SPEECH
 		self.queue = Queue()
 		self.speech = speechListener(self.queue)
+		#CHATBOT
+		
 
 	def update(self): #update widgets
 		#DIRECTION UPDATE
@@ -173,8 +179,10 @@ class fullWindow():
 			print command_type, command_val
 			if command_type == "direction":
 				self.direction.dirText.config(text = command_val)
-				self.direction.direction
-				#SEND DIRECTION TO SERIAL
+				if command_val == "open":
+					self.direction.direction = 1
+				elif command_val == "closed":
+					self.direction.direction = 0
 			if command_type == "weather":
 				self.city_name = command_val
 				self.time = time.time() - 5*61 #make change now by changing time
@@ -195,4 +203,6 @@ if __name__ == '__main__':
 		sung.rootWin.update_idletasks()
 		sung.rootWin.update()
 		sung.update()
+		#SEND DIRECTION TO SERIAL
+
 
