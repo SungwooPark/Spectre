@@ -10,6 +10,7 @@ from rec_commands import get_microphone_output #speech rec program
 import speech_recognition as sr
 from threading import Thread
 from Queue import Queue
+from chat_bot import ChatBotInterface
 
 # Set up serial interface, at 9600 bps
 ##ser = serial.Serial('/dev/ttyUSB0',9600)
@@ -109,6 +110,7 @@ class speechListener(Thread): #constantly checking on its own, outside of main t
 		Thread.__init__(self)
 		self.speech_rec = sr.Recognizer() #initialize speech recognition object
 		self.speechQueue = queue
+		# self.chatbot = ChatBotInterface()
 		self.daemon = True #speechListener quits when fullWindow quits
 		self.start()
 	def run(self): #threading automatically calls the run method
@@ -118,19 +120,17 @@ class speechListener(Thread): #constantly checking on its own, outside of main t
 			count += 1
 			command = get_microphone_output(self.speech_rec)
 			print command
-			if "weather" in command: #"get weather for Boston"
+			if "question" in command:
+				pass
+				# self.chatbot.CALL SOMETHING TO ASK QUESTION (i.e. "you asked for me?")
+			elif "weather" in command: #"get weather for Boston"
 				split_command = command.split(" ")
 				city_name = split_command[len(split_command)-1] #assumes city name is last word
 				self.speechQueue.put(("weather", city_name)) #assumes city is one word
-			if "open" in command:
+			elif "open" in command:
 				self.speechQueue.put(("direction","open"))
 			elif "shut" in command:
 				self.speechQueue.put(("direction","closed"))
-
-class chatBot(Thread):
-	def __init__(self, queue):
-		Thread.__init__(self)
-
 
 class fullWindow():
 	def __init__(self):
@@ -165,8 +165,6 @@ class fullWindow():
 		#SPEECH
 		self.queue = Queue()
 		self.speech = speechListener(self.queue)
-		#CHATBOT
-		
 
 	def update(self): #update widgets
 		#DIRECTION UPDATE
