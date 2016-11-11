@@ -18,7 +18,7 @@ from chat_bot import ChatBotInterface
 class direction(Frame):
 	def __init__(self, master):
 		Frame.__init__(self, master, bg = 'black')
-		self.dirText = Label(self, font=('Helvetica',100), fg="blue", bg="black",text='Closed')
+		self.dirText = Label(self, font=('Helvetica',100), fg= text_color, bg="black",text='Closed')
 		self.dirText.pack(side = TOP, anchor = E)
 		self.direction = 0 #0 is closed, 1 is open
 	def sendToArduino(self):
@@ -28,7 +28,7 @@ class direction(Frame):
 class clock(Frame):
 	def __init__(self, master):
 		Frame.__init__(self, master, bg = 'black')
-		self.clockText = Label(self, font=('Helvetica',100), fg="blue", bg="black",text='TIME')
+		self.clockText = Label(self, font=('Helvetica',100), fg= text_color, bg="black",text='TIME')
 		self.clockText.pack(side = TOP, anchor = E)
 	def getTime(self):
 		currentTime = time.strftime('%I: %M %p')
@@ -38,10 +38,10 @@ class weather(Frame):
 	def __init__(self, master):
 		Frame.__init__(self, master, bg = 'black')
 		#CREATE TEMP LABEL
-		self.weatherTemp = Label(self, font=('Helvetica',100), fg="blue", bg="black",text='TEMP')
+		self.weatherTemp = Label(self, font=('Helvetica',100), fg= text_color, bg="black",text='TEMP')
 		self.weatherTemp.pack(side = TOP, anchor = NE)
 		#CREATE DESCRIPTION LABEL
-		self.weatherDescription = Label(self, font=('Helvetica',40), fg="blue", bg="black",text='Description')
+		self.weatherDescription = Label(self, font=('Helvetica',40), fg= text_color, bg="black",text='Description')
 		self.weatherDescription.pack(side = TOP, anchor = NE)
 		#CREATE IMAGE LABEL
 		pic = Image.open('weather_placeholder.png')
@@ -79,9 +79,9 @@ class news(Frame):
 	def __init__(self, master):
 		Frame.__init__(self, master, bg = 'black')
 		#CREATE TITLE LABEL
-		self.trendingNews = Label(self, font=('Helvetica',40), fg="blue", bg="black",text='Trending News')
+		self.trendingNews = Label(self, font=('Helvetica',40), fg= text_color, bg="black",text='Trending News')
 		self.trendingNews.pack(side = TOP, anchor = E)
-		self.headlines = Label(self, font=('Helvetica',15), fg="blue", bg="black",text='Headlines')
+		self.headlines = Label(self, font=('Helvetica',15), fg= text_color, bg="black",text='Headlines')
 		self.headlines.pack(side = LEFT, anchor = SE)
 		self.request = requests
 	def getNews(self):
@@ -102,7 +102,7 @@ class news(Frame):
 class speechText(Frame): #NOT IMPLEMENTED YET
 	def __init__(self, master):
 		Frame.__init__(self, master, bg = 'black')
-		self.speechText = Label(self, font=('Helvetica',25), fg="blue", bg="black",text='CITY NAME')
+		self.speechText = Label(self, font=('Helvetica',25), fg= text_color, bg="black",text='Boston')
 		self.speechText.pack(side = TOP, anchor = E)
 
 class speechListener(Thread): #constantly checking on its own, outside of main thread
@@ -195,6 +195,7 @@ class fullWindow():
 		self.rootWin.destroy()
 
 if __name__ == '__main__':
+	text_color = "white"
 	sung = fullWindow()
 	while True:
 ##        read_serial = str(ser.readline())
