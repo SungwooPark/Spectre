@@ -110,7 +110,7 @@ class speechListener(Thread): #constantly checking on its own, outside of main t
 		Thread.__init__(self)
 		self.speech_rec = sr.Recognizer() #initialize speech recognition object
 		self.speechQueue = queue
-		# self.chatbot = ChatBotInterface()
+		self.chatbot = ChatBotInterface()
 		self.daemon = True #speechListener quits when fullWindow quits
 		self.start()
 	def run(self): #threading automatically calls the run method
@@ -121,8 +121,12 @@ class speechListener(Thread): #constantly checking on its own, outside of main t
 			command = get_microphone_output(self.speech_rec)
 			print command
 			if "question" in command:
-				pass
-				# self.chatbot.CALL SOMETHING TO ASK QUESTION (i.e. "you asked for me?")
+				self.chatbot.say_output("How can I help you?")
+				question = get_microphone_output(self.speech_rec)
+				if "mind" in command: #I mean "never mind"
+					pass
+				else:
+					self.chatbot.chatbot_response(question)
 			elif "weather" in command: #"get weather for Boston"
 				split_command = command.split(" ")
 				city_name = split_command[len(split_command)-1] #assumes city name is last word
