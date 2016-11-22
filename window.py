@@ -5,12 +5,13 @@ import requests
 from PIL import ImageTk, Image
 from cStringIO import StringIO
 from io import BytesIO
-from APPID_keys import newsAPPID, weatherAPPID
+from APPID_keys import weatherAPPID
 from rec_commands import get_microphone_output #speech rec program
 import speech_recognition as sr
 from threading import Thread
 from Queue import Queue
 from chat_bot import ChatBotInterface
+from news_class import news
 
 # Set up serial interface, at 9600 bps
 ##ser = serial.Serial('/dev/ttyUSB0',9600)
@@ -75,30 +76,6 @@ class weather(Frame):
 			currentDesc = str(processedData[1])
 			self.weatherDescription.config(text = currentDesc)
 
-class news(Frame):
-	def __init__(self, master):
-		Frame.__init__(self, master, bg = 'black')
-		#CREATE TITLE LABEL
-		self.trendingNews = Label(self, font=('Helvetica',40), fg= text_color, bg="black",text='Trending News')
-		self.trendingNews.pack(side = TOP, anchor = E)
-		self.headlines = Label(self, font=('Helvetica',15), fg= text_color, bg="black",text='Headlines')
-		self.headlines.pack(side = LEFT, anchor = SE)
-		self.request = requests
-	def getNews(self, news_source):
-		source = news_source
-		sortBy = 'top'
-		newsURL = 'https://newsapi.org/v1/articles?source=' + source + '&sortBy=' + sortBy + '&apiKey=' + newsAPPID
-		newsData = self.request.get(newsURL)
-		newsJSON = newsData.json()
-		newsHeadlines = newsJSON['articles']
-		headlinesString = ''
-		for article in newsHeadlines[1:4]: #first item is repeated, grab first three unique headlines
-			headlinesString += (article['title'] + '\n')
-		return headlinesString
-	def updateNews(self, news_source):
-		gatheredData = self.getNews(news_source)
-		self.headlines.config(text = gatheredData)
-
 class speechText(Frame): #NOT IMPLEMENTED YET
 	def __init__(self, master):
 		Frame.__init__(self, master, bg = 'black')
@@ -106,10 +83,11 @@ class speechText(Frame): #NOT IMPLEMENTED YET
 		self.speechText.pack(side = TOP, anchor = E)
 
 class speechListener(Thread): #constantly checking on its own, outside of main thread
-	def __init__(self, queue):
+	def __init__(self, queue, newsSources):
 		Thread.__init__(self)
 		self.speech_rec = sr.Recognizer() #initialize speech recognition object
 		self.speechQueue = queue
+		self.newsSources = newsSources #dictionary[name] = id
 		self.chatbot = ChatBotInterface()
 		self.daemon = True #speechListener quits when fullWindow quits
 		self.start()
@@ -128,10 +106,15 @@ class speechListener(Thread): #constantly checking on its own, outside of main t
 					pass
 				else:
 					self.chatbot.say_output(self.chatbot.chatbot_response(question))
-			elif "weather" in command: #"get weather for Boston"
+			elif "weather" in command: #ie "get weather for Boston"
 				split_command = command.split(" ")
 				city_name = split_command[len(split_command)-1] #assumes city name is last word
 				self.speechQueue.put(("weather", city_name)) #assumes city is one word
+			elif "news" in command: #ie "get news from BBC"
+				for source in self.newsSources:
+					if source in command:
+						self.speechQueue.put(("news", self.newsSources[source]))
+						break
 			elif "open" in command:
 				self.speechQueue.put(("direction","open"))
 			elif "shut" in command:
@@ -162,14 +145,16 @@ class fullWindow():
 		self.weather = weather(self.rightFrame) #create clock object in rightFrame
 		self.weather.pack(side = TOP ) #put clock object in frame (against RIGHT side)
 		#NEWS
-		self.news = news(self.rightFrame)
+		self.news = news(self.rightFrame, text_color)
 		self.news.pack(side = BOTTOM)
+		self.newsSources = self.news.getSources() #returns dictionary, dict[name] = id
+		self.newsOutlet = "cnn" #default news source
 		#SPEECH
 		self.speechText = speechText(self.leftFrame)
 		self.speechText.pack(side = BOTTOM)
 		#SPEECH
 		self.queue = Queue()
-		self.speech = speechListener(self.queue)
+		self.speech = speechListener(self.queue, self.newsSources)
 
 	def update(self): #update widgets
 		#DIRECTION UPDATE
@@ -189,11 +174,16 @@ class fullWindow():
 			if command_type == "weather":
 				self.city_name = command_val
 				self.time = time.time() - 5*61 #make change now by changing time
+			if command_type == "news":
+				print command_val
+				self.newsOutlet = command_val
+				self.news.trendingNews.config(text = command_val)
+				self.time = time.time() - 5*61 #make change now by changing time
 			self.speechText.speechText.config(text = command_val)
 		#WEATHER UPDATE
 		if time.time() - self.time > 5*60: #if it's been 5 minutes, check weather again
 			self.weather.updateWeather(self.city_name)
-			self.news.updateNews("cnn")
+			self.news.updateNews(self.newsOutlet)
 			self.time = time.time()
 
 	def escape(self, event): #exit tkinter program
@@ -203,10 +193,10 @@ if __name__ == '__main__':
 	text_color = "white"
 	sung = fullWindow()
 	while True:
-##        read_serial = str(ser.readline())
 		sung.rootWin.update_idletasks()
 		sung.rootWin.update()
 		sung.update()
+##        read_serial = str(ser.readline())
 		#SEND DIRECTION TO SERIAL
 
 
