@@ -1,5 +1,3 @@
-*.swp
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -10,6 +8,8 @@ __pycache__/
 
 #SPECTRE-SPECIFIC
 APPID_keys.py
+*.swp
+*.db
 
 # Distribution / packaging
 .Python
