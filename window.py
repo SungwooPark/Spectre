@@ -84,8 +84,8 @@ class news(Frame):
 		self.headlines = Label(self, font=('Helvetica',15), fg= text_color, bg="black",text='Headlines')
 		self.headlines.pack(side = LEFT, anchor = SE)
 		self.request = requests
-	def getNews(self):
-		source = 'cnn'
+	def getNews(self, news_source):
+		source = news_source
 		sortBy = 'top'
 		newsURL = 'https://newsapi.org/v1/articles?source=' + source + '&sortBy=' + sortBy + '&apiKey=' + newsAPPID
 		newsData = self.request.get(newsURL)
@@ -95,8 +95,8 @@ class news(Frame):
 		for article in newsHeadlines[1:4]: #first item is repeated, grab first three unique headlines
 			headlinesString += (article['title'] + '\n')
 		return headlinesString
-	def updateNews(self):
-		gatheredData = self.getNews()
+	def updateNews(self, news_source):
+		gatheredData = self.getNews(news_source)
 		self.headlines.config(text = gatheredData)
 
 class speechText(Frame): #NOT IMPLEMENTED YET
@@ -193,7 +193,7 @@ class fullWindow():
 		#WEATHER UPDATE
 		if time.time() - self.time > 5*60: #if it's been 5 minutes, check weather again
 			self.weather.updateWeather(self.city_name)
-			self.news.updateNews()
+			self.news.updateNews("cnn")
 			self.time = time.time()
 
 	def escape(self, event): #exit tkinter program
