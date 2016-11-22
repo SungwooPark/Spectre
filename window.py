@@ -123,10 +123,11 @@ class speechListener(Thread): #constantly checking on its own, outside of main t
 			if "question" in command:
 				self.chatbot.say_output("How can I help you?")
 				question = get_microphone_output(self.speech_rec)
-				if "mind" in command: #I mean "never mind"
+				print question
+				if "mind" in question: #I mean "never mind"
 					pass
 				else:
-					self.chatbot.chatbot_response(question)
+					self.chatbot.say_output(self.chatbot.chatbot_response(question))
 			elif "weather" in command: #"get weather for Boston"
 				split_command = command.split(" ")
 				city_name = split_command[len(split_command)-1] #assumes city name is last word
