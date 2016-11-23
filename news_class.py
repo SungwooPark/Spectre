@@ -12,13 +12,14 @@ class news(Frame):
 		self.headlines.pack(side = LEFT, anchor = SE)
 		self.request = requests
 	def getSources(self): #returns dictionary of news sources
-		rawSources = self.request.get('https://newsapi.org/v1/sources?language=en')
-		sourceJSON = rawSources.json()
+		sourceData = self.request.get('https://newsapi.org/v1/sources?language=en')
+		sourceJSON = sourceData.json()
 		sourceDict = dict()
 		for source in sourceJSON['sources']:
 			sourceName = source['name'] #some of the names have (AU) or (UK) at the end
 			sourceId = source['id']
 			sourceDict[sourceName] = sourceId
+		sourceDict['ABC News'] = sourceDict['ABC News (AU)']
 		return sourceDict
 	def getNews(self, news_source):
 		source = news_source
