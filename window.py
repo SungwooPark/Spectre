@@ -1,78 +1,17 @@
 from Tkinter import *
 import serial
 import time
-from rec_commands import get_microphone_output #speech rec program
-import speech_recognition as sr
-from threading import Thread
 from Queue import Queue
-from chat_bot import ChatBotInterface
 from news_class import news
 from weather_class import weather
 from clock_class import clock
+from direction_class import direction
+from speech_listener_class import speechListener
+from interaction_text_class import speechText
+from distance_class import distanceFrom
 
 # Set up serial interface, at 9600 bps
 ##ser = serial.Serial('/dev/ttyUSB0',9600)
-
-class direction(Frame):
-	def __init__(self, master):
-		Frame.__init__(self, master, bg = 'black')
-		self.dirText = Label(self, font=('Helvetica',100), fg= text_color, bg="black",text='Closed')
-		self.dirText.pack(side = TOP, anchor = E)
-		self.direction = 0 #0 is closed, 1 is open
-	def sendToArduino(self):
-		pass # write to Arduino
-
-class speechText(Frame): #NOT IMPLEMENTED YET
-	def __init__(self, master):
-		Frame.__init__(self, master, bg = 'black')
-		self.speechText = Label(self, font=('Helvetica',25), fg= text_color, bg="black",text='Boston')
-		self.speechText.pack(side = TOP, anchor = E)
-
-class speechListener(Thread): #constantly checking on its own, outside of main thread
-	def __init__(self, queue, newsSources):
-		Thread.__init__(self)
-		self.speech_rec = sr.Recognizer() #initialize speech recognition object
-		self.speechQueue = queue
-		self.newsSources = newsSources #dictionary[name] = id
-		self.chatbot = ChatBotInterface()
-		self.daemon = True #speechListener quits when fullWindow quits
-		self.start()
-	def run(self): #threading automatically calls the run method
-		count = 0
-		while True:
-			print count
-			count += 1
-			command = get_microphone_output(self.speech_rec)
-			print command
-			#ASK CHATBOT QUESTION
-			if "question" in command:
-				self.chatbot.say_output("How can I help you?")
-				question = get_microphone_output(self.speech_rec)
-				print question
-				if "mind" in question: #I mean "never mind"
-					pass
-				else:
-					self.chatbot.say_output(self.chatbot.chatbot_response(question))
-			#CHANGE WEATHER LOCATION
-			elif "weather" in command: #ie "get weather for Boston"
-				split_command = command.split(" ")
-				city_name = split_command[len(split_command)-1] #assumes city name is last word
-				self.speechQueue.put(("weather", city_name)) #assumes city is one word
-			#CHANGE NEWS SOURCE
-			elif "news" in command: #ie "get news from BBC"
-				for source in self.newsSources:
-					if source in command:
-						self.speechQueue.put(("news", self.newsSources[source]))
-			elif "zone" in command: #ie "change timezone to Madrid, Spain"
-				split_command = command.split(" ")
-				city_name = split_command[len(split_command)-2]
-				country_name = split_command[len(split_command)-1]
-				self.speechQueue.put(("timezone", ((city_name, country_name))))
-			#OPEN/CLOSE MIRROR
-			elif "open" in command:
-				self.speechQueue.put(("direction","open"))
-			elif "shut" in command:
-				self.speechQueue.put(("direction","closed"))
 
 class fullWindow():
 	def __init__(self):
@@ -89,7 +28,7 @@ class fullWindow():
 		self.rightFrame.pack(expand=False, fill = 'both', side = RIGHT) #put frame against RIGHT side, fill frame in x and y directions		
 		
 		#DIRECTION
-		self.direction = direction(self.leftFrame) #create direction object in leftFrame
+		self.direction = direction(self.leftFrame, text_color) #create direction object in leftFrame
 		self.direction.pack(side = BOTTOM, anchor = SW) #put direction object in frame (against LEFT side)
 		#CLOCK
 		self.city_name = "Needham"
@@ -103,14 +42,18 @@ class fullWindow():
 		#NEWS
 		self.news = news(self.rightFrame, text_color)
 		self.news.pack(side = BOTTOM)
-		self.newsSources = self.news.getSources() #returns dictionary, dict[name] = id
+		# self.newsSources = self.news.getSources() #returns dictionary, dict[name] = id
 		self.newsOutlet = "cnn" #default news source
-		#SPEECH
-		self.speechText = speechText(self.leftFrame)
+		#INTERACTION TEXT
+		self.speechText = speechText(self.leftFrame, text_color)
 		self.speechText.pack(side = BOTTOM)
 		#SPEECH
 		self.queue = Queue()
-		self.speech = speechListener(self.queue, self.newsSources)
+		self.speech = speechListener(self.queue, [])#self.newsSources)
+		#TRIP DISTANCE/DURATION
+		self.distanceFrom = distanceFrom(text_color)
+		self.distance, self.duration = self.distanceFrom.getDistanceFrom(self.city_name, self.country_name, 'New York City', 'NY')
+		self.speechText.speechText.config(text = self.duration)
 
 	def update(self): #update widgets
 		#DIRECTION UPDATE
@@ -160,5 +103,3 @@ if __name__ == '__main__':
 		sung.update()
 ##        read_serial = str(ser.readline())
 		#SEND DIRECTION TO SERIAL
-
-
