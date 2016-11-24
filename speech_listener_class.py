@@ -39,11 +39,21 @@ class speechListener(Thread): #constantly checking on its own, outside of main t
 				for source in self.newsSources:
 					if source in command:
 						self.speechQueue.put(("news", self.newsSources[source]))
+			#CHANGE TIMEZONE				
 			elif "zone" in command: #ie "change timezone to Madrid, Spain"
 				split_command = command.split(" ")
 				city_name = split_command[len(split_command)-2]
 				country_name = split_command[len(split_command)-1]
 				self.speechQueue.put(("timezone", ((city_name, country_name))))
+			#GET TRIP INFORMATION				
+			elif "trip" in command: #ie "length of trip from A to B"
+				from_split_command = command.split("from ")
+				to_split_command = from_split_command[1].split(" to ")
+				origin_address = to_split_command[len(to_split_command)-2] #item 0
+				final_address = to_split_command[len(to_split_command)-1]#item 1
+				print origin_address
+				print final_address
+				self.speechQueue.put(("trip", ((origin_address, final_address))))
 			#OPEN/CLOSE MIRROR
 			elif "open" in command:
 				self.speechQueue.put(("direction","open"))

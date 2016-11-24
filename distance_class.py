@@ -12,10 +12,12 @@ class distanceFrom(Frame):
 		self.distanceText = Label(self, font=('Helvetica',25), fg= text_color, bg="black",text='Logistics')
 		self.distanceText.pack(side = TOP, anchor = W)
 		self.request = requests
-	def getDistanceFrom(self, origin_city, origin_state, final_city, final_state):
-		distURL = 'https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=' + origin_city + ',' + origin_state + "&destinations=" + final_city + ',' + final_state + '&key=' + googleAPPID
+	def getDistanceFrom(self, origin_address, final_address):
+		# distURL = 'https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=' + origin_city + ',' + origin_state + "&destinations=" + final_city + ',' + final_state + '&key=' + googleAPPID
+		distURL = 'https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=' + origin_address + "&destinations=" + final_address + '&key=' + googleAPPID
 		distData = self.request.get(distURL)
 		distJSON = distData.json()
+		print distJSON
 		if distJSON['status'] == 'OK': #make sure user used correct format (city, country)
 			distance = distJSON['rows'][0]['elements'][0]['distance']['text']
 			duration = distJSON['rows'][0]['elements'][0]['duration']['text']
@@ -23,9 +25,9 @@ class distanceFrom(Frame):
 			return ((distance, duration))
 		else: #in case command's format was wrong, etc
 			return ((0,0))
-	def setWidget(self, origin_city, origin_state, final_city, final_state):
-		distance, duration = self.getDistanceFrom(origin_city, origin_state, final_city, final_state)
-		overviewMessage = origin_city + " to " + final_city
+	def setWidget(self, origin_address, final_address):
+		distance, duration = self.getDistanceFrom(origin_address, final_address)
+		overviewMessage = origin_address.split(",")[0] + "\nto " + final_address.split(",")[0]
 		durationMessage = "Duration: " + duration
 		distanceMessage = "Distance: " + distance
 		self.tripText.config(text = overviewMessage)
