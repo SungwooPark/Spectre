@@ -51,11 +51,12 @@ class fullWindow():
 		self.queue = Queue()
 		self.speech = speechListener(self.queue, [])#self.newsSources)
 		#TRIP DISTANCE/DURATION
-		self.distanceFrom = distanceFrom(text_color)
-		self.distance, self.duration = self.distanceFrom.getDistanceFrom(self.city_name, self.country_name, 'New York City', 'NY')
-		self.speechText.speechText.config(text = self.duration)
+		self.trip = distanceFrom(self.rightFrame, text_color)
+		self.trip.pack(side = BOTTOM)
+		self.trip.setWidget('Needham', 'MA', 'Seattle', 'WA')
 
 	def update(self): #update widgets
+		self.news.pack_forget()
 		#DIRECTION UPDATE
 ##        self.direction.dirText.config(text = read_serial)
 		#TIME UPDATE
@@ -93,6 +94,10 @@ class fullWindow():
 
 	def escape(self, event): #exit tkinter program
 		self.rootWin.destroy()
+
+	def replaceWidget(self, old_widget, new_widget):
+		old_widget.pack_forget()
+		new_widget.pack()
 
 if __name__ == '__main__':
 	text_color = "white"
