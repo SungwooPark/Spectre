@@ -30,7 +30,7 @@ class fullWindow():
 		self.rightFrame.pack(expand=False, fill = 'both', side = RIGHT) #put frame against RIGHT side, fill frame in x and y directions		
 		
 		#DIRECTION
-		self.direction = direction(self.leftFrame, text_color) #create direction object in leftFrame
+		self.direction = direction(self.rightFrame, text_color) #create direction object in leftFrame
 		#CLOCK
 		self.city_name = "Needham"
 		self.country_name = "US"
@@ -93,13 +93,12 @@ class fullWindow():
 				origin_address, final_address = command_val
 				self.trip.setWidget(origin_address, final_address)
 				self.showWidget(self.trip)
-			self.speechText.speechText.config(text = command_type)	
+			self.speechText.speechText.config(text = command_val)	
 		#WEATHER/NEWS UPDATE
 		if time.time() - self.time > 5*60: #if it's been 5 minutes, check weather again
 			self.weather.updateWeather(self.city_name)
 			self.news.updateNews(self.newsOutlet)
 			self.time = time.time()
-			self.showWidget(self.news)
 
 	def escape(self, event): #exit tkinter program
 		self.rootWin.destroy()
