@@ -29,6 +29,24 @@ class speechListener(Thread): #constantly checking on its own, outside of main t
 					pass
 				else:
 					self.chatbot.say_output(self.chatbot.chatbot_response(question))
+			#SHOW/PIN A WIDGET	
+			elif "show" or "hyde" or "hide" or "add" or "remove" in command.lower(): #ie "pin weather widget"
+				command = command.lower()
+				do = "show"
+				if "hyde" in command or "hide" in command: #for some reason, the format
+					do = "hide" #"if "Hyde" or "hide" in command:"" breaks it :(
+				elif "add" in command:
+					do = "add"
+				elif "remove" in command:
+					do = "remove"
+				if "weather" in command:
+					self.speechQueue.put((do, "weather"))
+				elif "news" in command:
+					self.speechQueue.put((do, "news"))
+				elif "trip" in command:
+					self.speechQueue.put((do, "trip"))
+				elif "direction" in command:
+					self.speechQueue.put((do, "direction"))
 			#CHANGE WEATHER LOCATION
 			elif "weather" in command: #ie "get weather for Boston"
 				split_command = command.split(" ")
@@ -54,6 +72,7 @@ class speechListener(Thread): #constantly checking on its own, outside of main t
 				print origin_address
 				print final_address
 				self.speechQueue.put(("trip", ((origin_address, final_address))))
+
 			#OPEN/CLOSE MIRROR
 			elif "open" in command:
 				self.speechQueue.put(("direction","open"))
