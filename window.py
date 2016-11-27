@@ -2,13 +2,13 @@ from Tkinter import *
 import serial
 import time
 from Queue import Queue
-from news_class import news
-from weather_class import weather
-from clock_class import clock
-from direction_class import direction
-from speech_listener_class import speechListener
-from interaction_text_class import speechText
-from distance_class import distanceFrom
+from Widgets.news_class import news
+from Widgets.weather_class import weather
+from Widgets.clock_class import clock
+from Widgets.direction_class import direction
+from Widgets.distance_class import distanceFrom
+from Speech.speech_listener_class import speechListener
+from Speech.interaction_text_class import speechText
 
 # Set up serial interface, at 9600 bps
 ##ser = serial.Serial('/dev/ttyUSB0',9600)
@@ -43,7 +43,7 @@ class fullWindow():
 		self.country_name = "US"
 		self.clock = clock(self.leftFrame, text_color) #create clock object in rightFrame
 		self.clock.pack(side = TOP , anchor = NW) #put clock object in frame (against RIGHT side)
-		self.timezoneDiff = self.clock.getTimezoneDiff(self.city_name, self.country_name)
+		self.timezoneDiff = self.clock.getTimezoneDiff(self.city_name + ',' + self.country_name)
 		#WEATHER
 		self.weather = weather(self.rightFrame, text_color) #create clock object in rightFrame
 		#NEWS
@@ -81,18 +81,18 @@ class fullWindow():
 			#SET WEATHER LOCATION
 			if command_type == "weather":
 				self.city_name = command_val
-				self.time = time.time() - 5*61 #make change now by changing time
+				self.weather.updateWeather(self.city_name)
 				self.showWidget(self.weather)
 			#SET NEWS SOURCE
 			if command_type == "news":
 				self.newsOutlet = command_val
 				self.news.trendingNews.config(text = command_val)
-				self.time = time.time() - 5*61 #make change now by changing time
+				self.news.updateNews(self.newsOutlet)
 				self.showWidget(self.news)
 			#SET TIMEZONE
 			if command_type == "timezone":
-				self.city_name, self.country_name = command_val
-				self.timezoneDiff = self.clock.getTimezoneDiff(self.city_name, self.country_name)
+				self.address = command_val
+				self.timezoneDiff = self.clock.getTimezoneDiff(self.address)
 				self.time = time.time() - 5*61 #make change now by changing time
 			#SHOW TRIP
 			if command_type == "trip":
@@ -119,6 +119,7 @@ class fullWindow():
 					self.unPinWidget(self.trip)
 				elif command_val == "direction":
 					self.unPinWidget(self.direction)
+			#SHOW WIDGET
 			if command_type == "show":
 				if command_val == "weather":
 					self.showWidget(self.weather)
@@ -128,6 +129,7 @@ class fullWindow():
 					self.showWidget(self.trip)
 				elif command_val == "direction":
 					self.showWidget(self.direction)
+			#HIDE WIDGET
 			if command_type == "hide":
 				if command_val == "weather":
 					self.hideWidget(self.weather)
@@ -166,6 +168,8 @@ class fullWindow():
 	def showWidget(self, new_widget):
 		for widget in self.temp_widget_list: #bc we don't have many widgets and this makes it so we don't have
 			widget.pack_forget() #to remember the current visible widget which we now need to make invisible
+		for widget in self.pinned_widgets:
+			widget.pack(side = BOTTOM, anchor = NE)
 		new_widget.pack(side = TOP, anchor = NE) #this will also move a pinned widget up to the top right (focus)
 
 	def hideWidget(self, selected_widget):
