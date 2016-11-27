@@ -1,0 +1,5 @@
+indico_key = 'f7ccad8688d4d4fca0a8166911d7ab5c'
+consumer_key = 'dE8kbqQIaTCMmfwGgfWCQoifl'
+consumer_secret = 'VFmmXEOzjJoqtjjElHG8FDyeuDNT450AiWU5bKBQ1pV5Zvjc2Q'
+access_token_key = '881236470-8eyrsUQuE7KvvTgqWt6sN4WLtuMRBq6ItrObSfUP'
+access_token_secret = 'mlU25f5SDsHxSit2ipsEwxtiHn3JJ9dIKwfdfzefyr7kM'

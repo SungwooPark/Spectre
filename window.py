@@ -1,12 +1,14 @@
 from Tkinter import *
 import serial
 import time
+import sys
 from Queue import Queue
 from Widgets.news_class import news
 from Widgets.weather_class import weather
 from Widgets.clock_class import clock
 from Widgets.direction_class import direction
 from Widgets.distance_class import distanceFrom
+from Widgets.newsbox_class import newsBox
 from Speech.speech_listener_class import speechListener
 from Speech.interaction_text_class import speechText
 
@@ -20,16 +22,8 @@ class fullWindow():
 		self.rootWin.attributes("-fullscreen", True)
 		self.time = time.time() - 5*60; #this makes the loop below update weather right away
 		self.rootWin.bind('<Return>',self.escape) #enter key exits program
-		self.rootWin.bind('<Prior>',self.add1) #enter key exits program
-		self.rootWin.bind('<Up>',self.add2) #enter key exits program
-		self.rootWin.bind('<Next>',self.remove1) #enter key exits program
-		self.rootWin.bind('<Down>',self.remove2) #enter key exits program
-		self.rootWin.bind('<Left>',self.show) #enter key exits program
-		self.rootWin.bind('<Right>',self.hide) #enter key exits program
 
 		#SETUP FRAMES
-		# self.centerFrame = Frame(self.rootWin, background = 'black') #create a second frame
-		# self.centerFrame.pack(expand=False, fill = 'both', side = BOTTOM, pady = 300) #put frame against RIGHT side, fill frame in x and y directions		
 		self.leftFrame = Frame(self.rootWin, background = 'black') #create first frame
 		self.leftFrame.pack(expand=False, fill = 'both', side = LEFT) #put frame against LEFT side, fill frame in x and y directions
 		self.rightFrame = Frame(self.rootWin, background = 'black') #create a second frame
@@ -39,11 +33,10 @@ class fullWindow():
 		#DIRECTION
 		self.direction = direction(self.rightFrame, text_color) #create direction object in leftFrame
 		#CLOCK
-		self.city_name = "Needham"
-		self.country_name = "US"
+		self.address = "Needham, US"
 		self.clock = clock(self.leftFrame, text_color) #create clock object in rightFrame
 		self.clock.pack(side = TOP , anchor = NW) #put clock object in frame (against RIGHT side)
-		self.timezoneDiff = self.clock.getTimezoneDiff(self.city_name + ',' + self.country_name)
+		self.timezoneDiff = self.clock.getTimezoneDiff(self.address)
 		#WEATHER
 		self.weather = weather(self.rightFrame, text_color) #create clock object in rightFrame
 		#NEWS
@@ -58,8 +51,11 @@ class fullWindow():
 		self.speech = speechListener(self.queue, self.newsSources)
 		#TRIP DISTANCE/DURATION
 		self.trip = distanceFrom(self.rightFrame, text_color)
+		#NEWSBOX
+		self.newsbox = newsBox(self.rightFrame, text_color)
+
 		#SET NON-PINNED WIDGET LIST
-		self.temp_widget_list = [self.direction, self.weather, self.news, self.trip]
+		self.temp_widget_list = [self.direction, self.weather, self.news, self.trip, self.newsbox]
 		self.pinned_widgets = []
 
 	def update(self): #update widgets
@@ -80,8 +76,8 @@ class fullWindow():
 				self.showWidget(self.direction)
 			#SET WEATHER LOCATION
 			if command_type == "weather":
-				self.city_name = command_val
-				self.weather.updateWeather(self.city_name)
+				self.address = command_val
+				self.weather.updateWeather(self.address)
 				self.showWidget(self.weather)
 			#SET NEWS SOURCE
 			if command_type == "news":
@@ -99,6 +95,11 @@ class fullWindow():
 				origin_address, final_address = command_val
 				self.trip.setWidget(origin_address, final_address)
 				self.showWidget(self.trip)
+			#SHOW NEWSBOX
+			if command_type == "newsbox":
+				search_term = command_val
+				self.newsbox.produce_map(search_term)
+				self.showWidget(self.newsbox)			
 			#PIN WIDGET
 			if command_type == "add":
 				if command_val == "weather":
@@ -142,28 +143,13 @@ class fullWindow():
 			self.speechText.speechText.config(text = command_val)
 		#WEATHER/NEWS UPDATE
 		if time.time() - self.time > 5*60: #if it's been 5 minutes, check weather again
-			self.weather.updateWeather(self.city_name)
+			self.weather.updateWeather(self.address)
 			self.news.updateNews(self.newsOutlet)
 			self.time = time.time()
 		#DIRECTION UPDATE
 ##        self.direction.dirText.config(text = read_serial)
 		#TIME UPDATE
 		currentTime = self.clock.updateTime(self.timezoneDiff)
-
-	def escape(self, event):
-		self.rootWin.destroy()
-	def add1(self, event):
-		self.pinWidget(self.weather)
-	def add2(self, event):
-		self.pinWidget(self.trip)
-	def remove1(self, event):
-		self.unPinWidget(self.weather)
-	def remove2(self, event):
-		self.unPinWidget(self.trip)
-	def show(self, event): 
-		self.showWidget(self.news)
-	def hide(self, event):
-		self.hideWidget(self.news)
 
 	def showWidget(self, new_widget):
 		for widget in self.temp_widget_list: #bc we don't have many widgets and this makes it so we don't have
@@ -189,6 +175,9 @@ class fullWindow():
 			self.temp_widget_list.append(unpinned_widget)
 		unpinned_widget.pack_forget()
 		self.pinned_widgets.remove(unpinned_widget)
+
+	def escape(self, event): #exit tkinter program
+ 		self.rootWin.destroy()
 
 if __name__ == '__main__':
 	text_color = "white"

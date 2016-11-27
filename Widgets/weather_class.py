@@ -15,7 +15,7 @@ class weather(Frame):
 		self.weatherDescription = Label(self, font=('Helvetica',40), fg= text_color, bg="black",text='Description')
 		self.weatherDescription.pack(side = TOP, anchor = NE)
 		#CREATE IMAGE LABEL
-		pic = Image.open('weather_placeholder.png')
+		pic = Image.open('Widgets/img.png')
 		self.weatherImage = ImageTk.PhotoImage(pic)
 		self.weatherPane = Label(self, image = self.weatherImage)
 		self.weatherPane.pack(side = BOTTOM, anchor = NE)
