@@ -3,7 +3,6 @@ import speech_rec
 import subprocess
 
 class ChatBotInterface:
-
     def __init__(self):
 
         self.chatbot = ChatBot(
