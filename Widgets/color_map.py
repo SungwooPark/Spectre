@@ -4,7 +4,7 @@ A module to generate CSV file of choropleth map based on sentiment values of dif
 
 import csv
 import webbrowser
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 
 def color_mapper(value):
     """
