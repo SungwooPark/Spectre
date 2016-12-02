@@ -8,7 +8,7 @@ from Widgets.weather_class import weather
 from Widgets.clock_class import clock
 from Widgets.direction_class import direction
 from Widgets.distance_class import distanceFrom
-from Widgets.newsbox_class import newsBox
+#from Widgets.newsbox_class import newsBox
 from Speech.speech_listener_class import speechListener
 from Speech.interaction_text_class import speechText
 
@@ -52,7 +52,7 @@ class fullWindow():
 		#TRIP DISTANCE/DURATION
 		self.trip = distanceFrom(self.rightFrame, text_color)
 		#NEWSBOX
-		self.newsbox = newsBox(self.rightFrame, text_color)
+		self.newsbox = None;#newsBox(self.rightFrame, text_color)
 
 		#SET NON-PINNED WIDGET LIST
 		self.temp_widget_list = [self.direction, self.weather, self.news, self.trip, self.newsbox]
