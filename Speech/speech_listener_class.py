@@ -3,7 +3,7 @@ import speech_recognition as sr
 from threading import Thread
 from Queue import Queue
 from chat_bot import ChatBotInterface
-import transcribe_streaming
+# import transcribe_streaming
 
 class speechListener(Thread): #constantly checking on its own, outside of main thread
     #Google cloud speech api related methods

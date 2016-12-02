@@ -53,7 +53,7 @@ class mic_input_parser(Thread):
         # connection alive for that long, plus some more to give the API time to figure
         # out the transcription.
         # * https://g.co/cloud/speech/limits#content
-        self.DEADLINE_SECS = 60 * 2 + 5
+        self.DEADLINE_SECS = 60 * 10 + 5
         self.SPEECH_SCOPE = 'https://www.googleapis.com/auth/cloud-platform'
 
 
@@ -286,16 +286,15 @@ class mic_input_parser(Thread):
                         search_term = in_split_command[len(in_split_command)-2] #three word list, want middle word
                         self.speechQueue.put(("newsbox", search_term))
                 #CHANGE NEWS SOURCE
-                #elif "news" in command.lower(): #ie "get news from BBC"
-                #    for source in self.newsSources:
-                #        if source in command:
-                #            self.speechQueue.put(("news", self.newsSources[source]))
+                elif "news" in command.lower(): #ie "get news from BBC"
+                   for source in self.newsSources:
+                       if source in command:
+                           self.speechQueue.put(("news", self.newsSources[source]))
                 #OPEN/CLOSE MIRROR
                 elif "open" in command:
                     self.speechQueue.put(("direction","open"))
-                elif "shut" in command:
+                elif "close" in command:
                     self.speechQueue.put(("direction","closed"))
-
 
                 # Exit recognition if any of the transcribed phrases could be
                 # one of our keywords.

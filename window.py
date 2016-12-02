@@ -42,8 +42,8 @@ class fullWindow():
         self.weather = weather(self.rightFrame, text_color) #create clock object in rightFrame
         #NEWS
         self.news = news(self.rightFrame, text_color)
-        #self.newsSources = self.news.getSources() #returns dictionary, dict[name] = id
-        self.newsSources = None
+        self.newsSources = self.news.getSources() #returns dictionary, dict[name] = id
+        # self.newsSources = None
         self.newsOutlet = "cnn" #default news source
         #INTERACTION TEXT
         self.speechText = speechText(self.leftFrame, text_color)
@@ -67,7 +67,6 @@ class fullWindow():
             print command_type, command_val
             #SET MIRROR MOVEMENT DIRECTION
             if command_type == "direction":
-                text = "Unfamiliar command"
                 if command_val == "open":
                     self.direction.direction = 1
                     text = "open"
@@ -76,27 +75,32 @@ class fullWindow():
                     text = "closed"
                 self.direction.dirText.config(text = text)
                 self.showWidget(self.direction)
+                self.speechText.echoAction(command_type, command_val)
             #SET WEATHER LOCATION
             if command_type == "weather":
                 self.address = command_val
                 self.weather.updateWeather(self.address)
                 self.showWidget(self.weather)
+                self.speechText.echoAction(command_type, command_val)
             #SET NEWS SOURCE
             if command_type == "news":
                 self.newsOutlet = command_val
                 self.news.trendingNews.config(text = command_val)
                 self.news.updateNews(self.newsOutlet)
                 self.showWidget(self.news)
+                self.speechText.echoAction(command_type, command_val)
             #SET TIMEZONE
             if command_type == "timezone":
                 self.address = command_val
                 self.timezoneDiff = self.clock.getTimezoneDiff(self.address)
                 self.time = time.time() - 5*61 #make change now by changing time
+                self.speechText.echoAction(command_type, command_val)
             #SHOW TRIP
             if command_type == "trip":
                 origin_address, final_address = command_val
                 self.trip.setWidget(origin_address, final_address)
                 self.showWidget(self.trip)
+                self.speechText.speechText.config(text = "You requested " + command_type)
             #SHOW NEWSBOX
             if command_type == "newsbox":
                 search_term = command_val
@@ -142,7 +146,6 @@ class fullWindow():
                     self.hideWidget(self.trip)
                 elif command_val == "direction":
                     self.hideWidget(self.direction)
-            self.speechText.speechText.config(text = command_val)
         #WEATHER/NEWS UPDATE
         if time.time() - self.time > 5*60: #if it's been 5 minutes, check weather again
             self.weather.updateWeather(self.address)
@@ -184,9 +187,16 @@ class fullWindow():
 if __name__ == '__main__':
     text_color = "white"
     sung = fullWindow()
-    while True:
-        sung.rootWin.update_idletasks()
-        sung.rootWin.update()
-        sung.update()
-##        read_serial = str(ser.readline())
-        #SEND DIRECTION TO SERIAL
+    # arduino = serial.Serial('/dev/ttyACM0',9600) #create arduino object
+    if 'arduino' in locals():
+	    while True:
+	        sung.rootWin.update_idletasks()
+	        sung.rootWin.update()
+	        sung.update()
+	        # read_serial = str(arduino.readline())
+     		arduino.write(sung.direction.direction); #send direction to arduino (0 is closed; 1 is open)
+    else:
+        while True:
+	        sung.rootWin.update_idletasks()
+	        sung.rootWin.update()
+	        sung.update()
