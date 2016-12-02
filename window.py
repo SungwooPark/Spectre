@@ -23,6 +23,7 @@ class fullWindow():
         self.rootWin.attributes("-fullscreen", True)
         self.time = time.time() - 5*60; #this makes the loop below update weather right away
         self.rootWin.bind('<Return>',self.escape) #enter key exits program
+        self.rootWin.bind('<Down>',self.restartSpeech) #enter key exits program
 
         #SETUP FRAMES
         self.leftFrame = Frame(self.rootWin, background = 'black') #create first frame
@@ -183,6 +184,9 @@ class fullWindow():
 
     def escape(self, event): #exit tkinter program
         self.rootWin.destroy()
+
+    def restartSpeech(self, event): #exit tkinter program
+        self.speech = mic_input_parser(self.queue, self.newsSources)
 
 if __name__ == '__main__':
     text_color = "white"
