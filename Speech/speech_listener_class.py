@@ -3,11 +3,14 @@ import speech_recognition as sr
 from threading import Thread
 from Queue import Queue
 from chat_bot import ChatBotInterface
+# import transcribe_streaming
 
 class speechListener(Thread): #constantly checking on its own, outside of main thread
+    #Google cloud speech api related methods
 	def __init__(self, queue, newsSources):
 		Thread.__init__(self)
-		self.speech_rec = sr.Recognizer() #initialize speech recognition object
+		#self.speech_rec = sr.Recognizer() #initialize speech recognition object  
+    
 		self.speechQueue = queue
 		self.newsSources = newsSources #dictionary[name] = id
 		self.chatbot = ChatBotInterface()

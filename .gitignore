@@ -7,7 +7,7 @@ __pycache__/
 *.so
 
 #SPECTRE-SPECIFIC
-APPID_keys.
+APPID_keys.py
 database.db
 *.swp
 *.db

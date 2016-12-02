@@ -2,7 +2,7 @@ import twitter
 import indicoio
 from Tkinter import *
 from PIL import ImageTk, Image
-import cairosvg
+#import cairosvg
 import sys
 from indicoio import sentiment
 from config import indico_key,consumer_key,consumer_secret,access_token_key,access_token_secret
@@ -16,7 +16,7 @@ class newsBox(Frame):
 		self.title = Label(self, font=('Helvetica',40), fg= text_color, bg="black",text='SEARCH TERM')
 		self.title.pack(side = TOP, anchor = NE)
 		#CREATE IMAGE LABEL
-		cairosvg.svg2png(url = 'Widgets/choropleth_map.svg', write_to = 'Widgets/map.png')
+		#cairosvg.svg2png(url = 'Widgets/choropleth_map.svg', write_to = 'Widgets/map.png')
 		pic = Image.open('Widgets/map.png')
 		self.choroMapPic = ImageTk.PhotoImage(pic)
 		self.choroMap = Label(self, image = self.choroMapPic, bg = "black")
@@ -75,7 +75,7 @@ class newsBox(Frame):
 	def produce_map(self, search_term):
 		average_sentiments = self.geo_data_analysis(search_term)
 		color_map.map_states(average_sentiments[0],average_sentiments[1],average_sentiments[2],average_sentiments[3],search_term)
-		cairosvg.svg2png(url = 'Widgets/choropleth_map.svg', write_to = 'Widgets/map.png')
+		#cairosvg.svg2png(url = 'Widgets/choropleth_map.svg', write_to = 'Widgets/map.png')
 		pic = Image.open('Widgets/map.png')
 		resized_pic = pic.resize((600,400),Image.ANTIALIAS) #resize image to whatever dimensions you want
 		self.choroMapPic = ImageTk.PhotoImage(resized_pic)
