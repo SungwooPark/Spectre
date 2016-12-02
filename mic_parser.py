@@ -166,7 +166,7 @@ class mic_input_parser(Thread):
             # for a list of supported languages.
             language_code='en-US',  # a BCP-47 language tag
             speech_context = cloud_speech.SpeechContext(
-                phrases = ['Spectre', 'Hey Spectre', 'open','close', 'widget','weather','mirror','newsbox']
+                phrases = ['Spectre', 'Hey Spectre', 'open','close', 'widget','weather','mirror','newsbox','hide','trip','add']
             )
         )
         streaming_config = cloud_speech.StreamingRecognitionConfig(
