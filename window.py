@@ -190,14 +190,21 @@ class fullWindow():
 if __name__ == '__main__':
     text_color = "white"
     sung = fullWindow()
-    # arduino = serial.Serial('/dev/ttyACM0',9600) #create arduino object
+    #arduino = serial.Serial('/dev/ttyUSB0',9600) #create arduino object
     if 'arduino' in locals():
-	    while True:
-	        sung.rootWin.update_idletasks()
-	        sung.rootWin.update()
-	        sung.update()
-	        # read_serial = str(arduino.readline())
-     	        arduino.write(sung.direction.direction); #send direction to arduino (0 is closed; 1 is open)
+        while True:
+            sung.rootWin.update_idletasks()
+            sung.rootWin.update()
+            sung.update()
+            # read_serial = str(arduino.readline())
+            '''if sung.direction.direction == 1:
+                arduino.write(str(sung.direction.direction)) #send direction to arduino (0 is closed; 1 is open)
+                sung.direction.direction = 2
+            elif sung.direction.direction == 0:
+                arduino.write(str(sung.direction.direction))
+                sung.direction.direction = 2
+            else:
+                arduino.write(str(sung.direction.direction))'''
     else:
         while True:
 	        sung.rootWin.update_idletasks()
