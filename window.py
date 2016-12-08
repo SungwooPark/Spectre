@@ -190,7 +190,7 @@ class fullWindow():
 if __name__ == '__main__':
     text_color = "white"
     sung = fullWindow()
-    arduino = serial.Serial('/dev/ttyUSB0',9600) #create arduino object
+    # arduino = serial.Serial('/dev/ttyUSB0',9600) #create arduino object
     if 'arduino' in locals():
         while True:
             sung.rootWin.update_idletasks()
