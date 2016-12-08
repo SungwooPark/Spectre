@@ -1,17 +1,7 @@
-#!/usr/bin/python
-# Copyright (C) 2016 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+"""
+This module is a microphone parser that captures speech input from an user, recognizes it using Google Cloud Speech API, and 
+puts an appropriate action into a queue that is used to communicate with GUI
+"""
 from __future__ import division
 
 import contextlib
@@ -38,6 +28,13 @@ class mic_input_parser(Thread):
     Records and communicates the microphone input using a queue
     """
     def __init__(self, speech_queue, newsSources):
+        """
+        Initializes microphone parser and all necessary components.
+        
+        :param speech_queue: A queue data structure used to relay the user commands to main GUI module
+        :param newsSource: specifies news outlet to use for GUI news widget
+        """        
+
         Thread.__init__(self)
         self.speechQueue = speech_queue
         self.newsSources = newsSources #dictionary[name] = id
@@ -224,12 +221,12 @@ class mic_input_parser(Thread):
                 #print(transcript.encode('utf-8'))
                 command = transcript.encode('utf-8')
 
-                print command
+                print(command)
                 #ASK CHATBOT QUESTION
                 if "question" in command.lower():
                     self.chatbot.say_output("How can I help you?")
                     question = get_microphone_output(self.speech_rec)
-                    print question
+                    print(question)
                     if "mind" in question: #I mean "never mind"
                         pass
                     else:
@@ -260,7 +257,7 @@ class mic_input_parser(Thread):
                         split_command = command.split("for ")
                         city_name = split_command[len(split_command)-1] #assumes city name is last word
                         self.speechQueue.put(("weather", city_name)) #assumes city is one word
-                        print city_name
+                        print(city_name)
                 #CHANGE TIMEZONE				
                 elif "zone" in command.lower(): #ie "change timezone to Madrid, Spain"
                     if "to" in command:
@@ -275,8 +272,8 @@ class mic_input_parser(Thread):
                         to_split_command = from_split_command[1].split(" to ")
                         origin_address = to_split_command[len(to_split_command)-2] #item 0
                         final_address = to_split_command[len(to_split_command)-1]#item 1
-                        print origin_address
-                        print final_address
+                        print(origin_address)
+                        print(final_address)
                         self.speechQueue.put(("trip", ((origin_address, final_address))))
                 #GET CHORO MAP
                 elif "box" in command.lower(): #ie "put bob in NewsBox"
@@ -305,6 +302,9 @@ class mic_input_parser(Thread):
                 num_chars_printed = 0
 
     def run(self):
+        """
+        Run speech recognition script
+        """
         with cloud_speech.beta_create_Speech_stub(
                 self.make_channel('speech.googleapis.com', 443)) as service:
             # For streaming audio from the microphone, there are three threads.
