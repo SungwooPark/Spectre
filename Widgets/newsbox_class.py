@@ -1,8 +1,10 @@
+"""NewsBox module"""
+
 import twitter
 import indicoio
 from Tkinter import *
 from PIL import ImageTk, Image
-#import cairosvg
+# import cairosvg
 import sys
 from indicoio import sentiment
 from config import indico_key,consumer_key,consumer_secret,access_token_key,access_token_secret
@@ -10,8 +12,12 @@ import color_map
 import os
 
 class newsBox(Frame):
+	"""NewsBox widget class that analyzes a search term and returns a choropleth map of the average polarity of tweets with that term."""
 	def __init__(self, master, text_color):
-		Frame.__init__(self, master, bg = 'black')
+		"""Creates NewsBox widget with placeholder search term and map picture.
+		Params: master - Tkinter frame in which the widget is placed
+				text_color - string color name for font
+		"""		Frame.__init__(self, master, bg = 'black')
 		#CREATE TEMP LABEL
 		self.title = Label(self, font=('Helvetica',40), fg= text_color, bg="black",text='SEARCH TERM')
 		self.title.pack(side = TOP, anchor = NE)
@@ -29,8 +35,12 @@ class newsBox(Frame):
 			access_token_secret = access_token_secret)
 
 	def geo_collect_tweets(self, search_term, latitude, longitude, radius):
-		"""search for tweets within certain radius of latitude and longitude with certain keyword in them.
-			Returns the list of unique tweet texts
+		"""Searches for tweets within certain radius of latitude and longitude with certain keyword in them.
+		Params: search_term - string term used to search tweets
+				latitude - double latitude for search parameters
+				longitude - double longitude for search parameters
+				radius - int radius of search
+		Returns: list of unique string tweets
 		"""
 		i = None
 		tweets = []
@@ -48,7 +58,9 @@ class newsBox(Frame):
 		return list(set(tweets)) #set gets rid of repititve tweets, but need to return a list
 
 	def geo_data_analysis(self, search_term):
-		"""analyzes the sentiment of tweets and return the average value for each region 
+		"""Finds the average positive/negative sentiment of tweets for each region.
+		Params: search_term - string term used to search tweets
+		Returns: list of four doubles (average polarity for West, South, Northeast, and Midwest)
 		"""
 		map_pol = dict()
 
@@ -73,6 +85,9 @@ class newsBox(Frame):
 		return [W_avg,S_avg,NE_avg,MW_avg]
 
 	def produce_map(self, search_term):
+		"""Updates NewsBox-related Tkinter Label widgets with new search term and its corresponding choropleth map.
+		Params: search_term - string term used to search tweets
+		"""
 		average_sentiments = self.geo_data_analysis(search_term)
 		color_map.map_states(average_sentiments[0],average_sentiments[1],average_sentiments[2],average_sentiments[3],search_term)
 		#cairosvg.svg2png(url = 'Widgets/choropleth_map.svg', write_to = 'Widgets/map.png')

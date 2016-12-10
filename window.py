@@ -1,3 +1,5 @@
+"""Main program"""
+
 from Tkinter import *
 import serial
 import time
@@ -7,23 +9,25 @@ from Widgets.news_class import news
 from Widgets.weather_class import weather
 from Widgets.clock_class import clock
 from Widgets.direction_class import direction
-from Widgets.distance_class import distanceFrom
+from Widgets.trip_class import trip
 #from Widgets.newsbox_class import newsBox
 from Speech.speech_listener_class import speechListener
-from Speech.interaction_text_class import speechText
+from Speech.command_assistance_class import speechText
 from mic_parser import mic_input_parser
 
 # Set up serial interface, at 9600 bps
 ##ser = serial.Serial('/dev/ttyUSB0',9600)
 
 class fullWindow():
+	"""Window class that displays widgets and starts/interacts with speech recognition thread."""
     def __init__(self):
+    	"""Creates Tkinter window and initializes its widgets."""
         self.rootWin = Tk()
         self.rootWin.configure(background='black')
         self.rootWin.attributes("-fullscreen", True)
         self.time = time.time() - 5*60; #this makes the loop below update weather right away
         self.rootWin.bind('<Return>',self.escape) #enter key exits program
-        self.rootWin.bind('<Down>',self.restartSpeech) #enter key exits program
+        self.rootWin.bind('<Down>',self.restartSpeech) #down key restarts program
         #SETUP FRAMES
         self.leftFrame = Frame(self.rootWin, background = 'black') #create first frame
         self.leftFrame.pack(expand=False, fill = 'both', side = LEFT) #put frame against LEFT side, fill frame in x and y directions
@@ -52,7 +56,7 @@ class fullWindow():
         self.queue = Queue()
         self.speech = mic_input_parser(self.queue, self.newsSources)
         #TRIP DISTANCE/DURATION
-        self.trip = distanceFrom(self.rightFrame, text_color)
+        self.trip = trip(self.rightFrame, text_color)
         #NEWSBOX
         #self.newsbox = newsBox(self.rightFrame, text_color)
 
@@ -60,7 +64,8 @@ class fullWindow():
         self.temp_widget_list = [self.direction, self.weather, self.news, self.trip]#, self.newsbox]
         self.pinned_widgets = []
 
-    def update(self): #update widgets
+    def update(self):
+    	"""Updates widgets periodically or given user input."""
         #VOICE RECOGNITION QUEUE
         if not self.queue.empty():
             command_type, command_val = self.queue.get()
@@ -73,7 +78,7 @@ class fullWindow():
                 elif command_val == "closed":
                     self.direction.direction = 0
                     text = "closed"
-                self.direction.dirText.config(text = text)
+                self.direction.updateDirection(text)
                 self.showWidget(self.direction)
                 self.speechText.echoAction(command_type, command_val)
             #SET WEATHER LOCATION
@@ -157,6 +162,9 @@ class fullWindow():
         currentTime = self.clock.updateTime(self.timezoneDiff)
 
     def showWidget(self, new_widget):
+    	"""Makes specified widget visible in "focus" spot.
+    	Params: new_widget - widget object user wants to see
+    	"""
         for widget in self.temp_widget_list: #bc we don't have many widgets and this makes it so we don't have
             widget.pack_forget() #to remember the current visible widget which we now need to make invisible
         for widget in self.pinned_widgets:
@@ -164,28 +172,40 @@ class fullWindow():
         new_widget.pack(side = TOP, anchor = NE) #this will also move a pinned widget up to the top right (focus)
 
     def hideWidget(self, selected_widget):
+    	"""Makes specified widget invisible in "focus" spot.
+    	Params: selected_widget - widget object user no longer wants to see
+    	"""
         if selected_widget not in self.pinned_widgets:
             selected_widget.pack_forget()
         else: #if it's in self.pinned_widgets
             selected_widget.pack(side = BOTTOM, anchor = NE) #put pinned widget back at bottom
 
     def pinWidget(self, pinned_widget): #just removes it from temporary widget list
-        if pinned_widget not in self.pinned_widgets:
+    	"""Adds specified widget to list of pinned widgets and shows it at the bottom right corner of screen until widget is actively removed.
+    	Params: pinned_widget - widget object user wants to keep on the screen
+    	"""
+    	if pinned_widget not in self.pinned_widgets:
             self.temp_widget_list.remove(pinned_widget)
             self.pinned_widgets.append(pinned_widget)
         pinned_widget.pack(side = BOTTOM, anchor = NE) #put pinned widget at bottom right of screen
 
     def unPinWidget(self, unpinned_widget): #just adds it back to temporary widget list
+    	"""Removes specified widget from list of pinned widgets and stops showing it at the bottom right corner of screen.
+    	Params: unpinned_widget - widget object user wants to remove from the screen
+    	"""
         if unpinned_widget not in self.temp_widget_list:
             self.temp_widget_list.append(unpinned_widget)
         unpinned_widget.pack_forget()
         self.pinned_widgets.remove(unpinned_widget)
 
     def escape(self, event): #exit tkinter program
+    	"""Destroys program given a keypress."""
         self.rootWin.destroy()
 
     def restartSpeech(self, event): #exit tkinter program
+    	"""Restarts speech thread (in case it freezes or something) given a keypress."""
         self.speech = mic_input_parser(self.queue, self.newsSources)
+        print "restarted speech thread"
 
 if __name__ == '__main__':
     text_color = "white"
