@@ -9,7 +9,7 @@ __pycache__/
 #SPECTRE-SPECIFIC
 APPID_keys.py
 database.db
-Widgets/config.py
+/Widgets/config.py
 *.swp
 *.db
 

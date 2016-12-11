@@ -8,7 +8,8 @@ class speechText(Frame): #NOT FULLY IMPLEMENTED YET
 		"""Creates command assistance widget with placeholder text value of "na".
 		Params: master - Tkinter frame in which the widget is placed
 				text_color - string color name for font
-		"""		Frame.__init__(self, master, bg = 'black')
+		"""		
+		Frame.__init__(self, master, bg = 'black')
 		self.speechText = Label(self, font=('Helvetica',25), fg= text_color, bg="black",text='na')
 		self.speechText.pack(side = TOP, anchor = 'c')
 		self.widget_formats = {'timezone':'Change timezone to Madrid, Spain', 'weather': 'Get weather for Boston', 'news': 'Get news from BBC', 'trip': 'Get length of trip from A to B', 'box': 'Put bob in NewsBox', 'direction': 'Shut mirror. Open mirror'}
