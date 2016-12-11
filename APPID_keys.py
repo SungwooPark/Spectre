@@ -1,4 +1,4 @@
-newsAPPID = ''
+newsAPPID = 'testing'
 weatherAPPID = ''
 googleAPPID = ''
 indico_key = ''
