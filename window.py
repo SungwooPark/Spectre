@@ -19,9 +19,9 @@ from mic_parser import mic_input_parser
 ##ser = serial.Serial('/dev/ttyUSB0',9600)
 
 class fullWindow():
-	"""Window class that displays widgets and starts/interacts with speech recognition thread."""
+    """Window class that displays widgets and starts/interacts with speech recognition thread."""
     def __init__(self):
-    	"""Creates Tkinter window and initializes its widgets."""
+        """Creates Tkinter window and initializes its widgets."""
         self.rootWin = Tk()
         self.rootWin.configure(background='black')
         self.rootWin.attributes("-fullscreen", True)
