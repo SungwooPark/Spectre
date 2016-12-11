@@ -1,6 +1,8 @@
 # Spectre
 ##Olin College Fall 2016 Principles of Engineering Final Project - Spectre Smart Cabinet
 
+![Spectre Hero Image](HeroFinal.png)
+
 Spectre is an affordable DIY smart cabinet that you can construct easily using Raspberry Pi. 
 
 Check out our [documentation](http://poe.olin.edu/2016/spectre) for hardware construction and software configuration instructions.
