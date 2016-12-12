@@ -12,7 +12,7 @@ class speechText(Frame): #NOT FULLY IMPLEMENTED YET
 		Frame.__init__(self, master, bg = 'black')
 		self.speechText = Label(self, font=('Helvetica',25), fg= text_color, bg="black",text='na')
 		self.speechText.pack(side = TOP, anchor = 'c')
-		self.widget_formats = {'timezone':'Change timezone to Madrid, Spain', 'weather': 'Get weather for Boston', 'news': 'Get news from BBC', 'trip': 'Get length of trip from A to B', 'box': 'Put bob in NewsBox', 'direction': 'Shut mirror. Open mirror'}
+		self.widget_formats = {'timezone':'Change timezone to Madrid, Spain', 'weather': 'Get weather for Boston', 'news': 'Get news from BBC', 'trip': 'Get length of trip from A to B by driving, walking, bicycling, or transit', 'box': 'Put bob in NewsBox', 'direction': 'Shut mirror. Open mirror'}
 	def misheard(self, command_type):
 		"""Updates command-related Tkinter Label widget with information about the command Spectre thinks it heard and that command's format.
 		Params: command_type - string command type
