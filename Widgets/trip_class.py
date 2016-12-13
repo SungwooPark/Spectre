@@ -21,6 +21,7 @@ class trip(Frame):
 		self.modeText = Label(self, font=('Helvetica',25), fg= text_color, bg="black",text='Travel Mode')
 		self.modeText.pack(side = TOP, anchor = W)
 		self.request = requests
+		self.acceptableModes = ['driving', 'walking', 'bicycling', 'transit']
 	def getDistanceFrom(self, origin_address, final_address, travel_mode):
 		"""Gets distance and duration of trip from one address to another using a given mode of travel.
 		Params: origin_address - string starting point address
@@ -45,6 +46,8 @@ class trip(Frame):
 				final_address - string end point address
 				travel_mode - string mode of travel (driving (default), walking, bicycling, or public transit)
 		"""
+		if travel_mode not in self.acceptableModes:
+			travel_mode = 'driving'
 		distance, duration = self.getDistanceFrom(origin_address, final_address, travel_mode)
 		overviewMessage = origin_address.split(",")[0] + "\nto " + final_address.split(",")[0]
 		durationMessage = "Duration: " + duration

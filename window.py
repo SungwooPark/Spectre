@@ -102,8 +102,8 @@ class fullWindow():
                 self.speechText.echoAction(command_type, command_val)
             #SHOW TRIP
             if command_type == "trip":
-                origin_address, final_address = command_val
-                self.trip.setWidget(origin_address, final_address)
+                origin_address, final_address, travel_mode = command_val
+                self.trip.setWidget(origin_address, final_address, travel_mode)
                 self.showWidget(self.trip)
                 self.speechText.speechText.config(text = "You requested " + command_type)
             #SHOW NEWSBOX

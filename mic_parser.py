@@ -269,12 +269,19 @@ class mic_input_parser(Thread):
                 elif "trip" in command.lower(): #ie "length of trip from A to B"
                     if "from" in command and "to" in command:
                         from_split_command = command.split("from ")
-                        to_split_command = from_split_command[1].split(" to ")
-                        origin_address = to_split_command[len(to_split_command)-2] #item 0
-                        final_address = to_split_command[len(to_split_command)-1]#item 1
+                        to_split_command = from_split_command[1].split(" to ") #split 2nd of 2
+                        if "by" in command:
+                            by_split_command = to_split_command[1].split(" by ")
+                            origin_address = to_split_command[len(to_split_command)-2] #item 0
+                            final_address = by_split_command[len(by_split_command)-2]#item 0
+                            travel_mode = by_split_command[len(by_split_command)-1]#item 1
+                        else:
+                            origin_address = to_split_command[len(to_split_command)-2] #item 0
+                            final_address = to_split_command[len(to_split_command)-1]#item 1
+                            travel_mode = 'driving'
                         print(origin_address)
                         print(final_address)
-                        self.speechQueue.put(("trip", ((origin_address, final_address))))
+                        self.speechQueue.put(("trip", [origin_address, final_address, travel_mode]))
                 #GET CHORO MAP
                 elif "box" in command.lower(): #ie "put bob in NewsBox"
                     if "put " in command and " in " in command:
