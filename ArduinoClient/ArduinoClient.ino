@@ -18,7 +18,7 @@ Adafruit_DCMotor *motorBaseR = AFMS.getMotor(3);
 Adafruit_DCMotor *motorBaseL = AFMS.getMotor(1);
 
 unsigned long previousTime = 0;  // initialize time check variable
-unsigned long interval = 2000; // 2 second response time for mechanization
+unsigned long interval = 300; // 2 second response time for mechanization
 int spd = 150;
 char incomingBit = '2'; // default is 2, does nothing
 
@@ -72,43 +72,63 @@ void receiveSerial(){
   }
 }
 
+/*void closeSequencetest(){
+  Serial.println("Now closing");
+  test_forward(motorBaseR); // ACW motion
+  test_forward(motorBaseL); // CW motion
+  delay(2000);
+  terminate(motorBaseR);
+  terminate(motorBaseL);
+}
+
+void openSequencetest(){
+  Serial.println("Now opening");
+  test_backward(motorBaseR); // CW
+  test_backward(motorBaseL); // ACW motion
+  delay(2000);
+  terminate(motorBaseR);
+  terminate(motorBaseL);
+}*/
+
 void loop() {
   // v1.3 : updated class
   receiveSerial();
   unsigned long currentTime = millis();
 
+  // for testing
+  /*openSequencetest();
+  if(currentTime - previousTime >= interval)
+  {
+  closeSequencetest();
+  }*/
+
   switch(incomingBit){
     case '0':
       // Close -> 0
 
-      // Separates the two sub-mirrors
+      // Joins the two sub-mirrors
       //Serial.print("Opening");
       //Serial.println(" ");
-      test_backward(motorBaseR);
-
-      if(currentTime - previousTime >= interval)
-      {
-        previousTime = currentTime;
-        terminate(motorBaseR);
-      }
+      test_forward(motorBaseR);
+      test_forward(motorBaseL);
       break;
     case '1':
       // Open -> 1
-      // Rejoins the two sub-mirrors
+      // Separates the two sub-mirrors
 
       //Serial.print("Closing");
       //Serial.println(" ");
-      test_forward(motorBase);
-
+      test_backward(motorBaseR);
+      test_backward(motorBaseL);
+      break;
+    default:
+      // 2 is initialized @ beginning
       if(currentTime - previousTime >= interval)
       {
         previousTime = currentTime;
         terminate(motorBaseR);
+        terminate(motorBaseL);
       }
-      break;
-    default:
-      // 2 is initialized @ beginning
-      delay(10); // global delay
       break;
   }
 }
