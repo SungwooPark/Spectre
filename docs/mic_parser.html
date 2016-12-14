@@ -1,0 +1,193 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module mic_parser</title>
+<meta charset="utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>mic_parser</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/sung/projects/Spectre/mic_parser.py">/home/sung/projects/Spectre/mic_parser.py</a></font></td></tr></table>
+    <p><tt>This&nbsp;module&nbsp;is&nbsp;a&nbsp;microphone&nbsp;parser&nbsp;that&nbsp;captures&nbsp;speech&nbsp;input&nbsp;from&nbsp;an&nbsp;user,&nbsp;recognizes&nbsp;it&nbsp;using&nbsp;Google&nbsp;Cloud&nbsp;Speech&nbsp;API,&nbsp;and&nbsp;<br>
+puts&nbsp;an&nbsp;appropriate&nbsp;action&nbsp;into&nbsp;a&nbsp;queue&nbsp;that&nbsp;is&nbsp;used&nbsp;to&nbsp;communicate&nbsp;with&nbsp;GUI</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="google.cloud.grpc.speech.v1beta1.cloud_speech_pb2.html">google.cloud.grpc.speech.v1beta1.cloud_speech_pb2</a><br>
+<a href="google.rpc.code_pb2.html">google.rpc.code_pb2</a><br>
+<a href="contextlib.html">contextlib</a><br>
+</td><td width="25%" valign=top><a href="google.cloud.credentials.html">google.cloud.credentials</a><br>
+<a href="grpc.framework.interfaces.face.face.html">grpc.framework.interfaces.face.face</a><br>
+<a href="functools.html">functools</a><br>
+</td><td width="25%" valign=top><a href="grpc.beta.implementations.html">grpc.beta.implementations</a><br>
+<a href="pyaudio.html">pyaudio</a><br>
+<a href="Queue.html">Queue</a><br>
+</td><td width="25%" valign=top><a href="re.html">re</a><br>
+<a href="signal.html">signal</a><br>
+<a href="sys.html">sys</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="threading.html#Thread">threading.Thread</a>(<a href="threading.html#_Verbose">threading._Verbose</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="mic_parser.html#mic_input_parser">mic_input_parser</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="mic_input_parser">class <strong>mic_input_parser</strong></a>(<a href="threading.html#Thread">threading.Thread</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Threaded&nbsp;script&nbsp;that&nbsp;parses&nbsp;a&nbsp;microphone&nbsp;input&nbsp;recognized&nbsp;using&nbsp;Google&nbsp;Cloud&nbsp;Speech&nbsp;API<br>
+Records&nbsp;and&nbsp;communicates&nbsp;the&nbsp;microphone&nbsp;input&nbsp;using&nbsp;a&nbsp;queue<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="mic_parser.html#mic_input_parser">mic_input_parser</a></dd>
+<dd><a href="threading.html#Thread">threading.Thread</a></dd>
+<dd><a href="threading.html#_Verbose">threading._Verbose</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="mic_input_parser-__init__"><strong>__init__</strong></a>(self, speech_queue, newsSources)</dt><dd><tt>Initializes&nbsp;microphone&nbsp;parser&nbsp;and&nbsp;all&nbsp;necessary&nbsp;components.<br>
+&nbsp;<br>
+:param&nbsp;speech_queue:&nbsp;A&nbsp;queue&nbsp;data&nbsp;structure&nbsp;used&nbsp;to&nbsp;relay&nbsp;the&nbsp;user&nbsp;commands&nbsp;to&nbsp;main&nbsp;GUI&nbsp;module<br>
+:param&nbsp;newsSource:&nbsp;specifies&nbsp;news&nbsp;outlet&nbsp;to&nbsp;use&nbsp;for&nbsp;GUI&nbsp;news&nbsp;widget</tt></dd></dl>
+
+<dl><dt><a name="mic_input_parser-listen_print_loop"><strong>listen_print_loop</strong></a>(self, recognize_stream)</dt><dd><tt>Iterates&nbsp;through&nbsp;server&nbsp;responses&nbsp;and&nbsp;prints&nbsp;them.<br>
+&nbsp;<br>
+The&nbsp;recognize_stream&nbsp;passed&nbsp;is&nbsp;a&nbsp;generator&nbsp;that&nbsp;will&nbsp;block&nbsp;until&nbsp;a&nbsp;response<br>
+is&nbsp;provided&nbsp;by&nbsp;the&nbsp;server.&nbsp;When&nbsp;the&nbsp;transcription&nbsp;response&nbsp;comes,&nbsp;print&nbsp;it.<br>
+&nbsp;<br>
+In&nbsp;this&nbsp;case,&nbsp;responses&nbsp;are&nbsp;provided&nbsp;for&nbsp;interim&nbsp;results&nbsp;as&nbsp;well.&nbsp;If&nbsp;the<br>
+response&nbsp;is&nbsp;an&nbsp;interim&nbsp;one,&nbsp;print&nbsp;a&nbsp;line&nbsp;feed&nbsp;at&nbsp;the&nbsp;end&nbsp;of&nbsp;it,&nbsp;to&nbsp;allow<br>
+the&nbsp;next&nbsp;result&nbsp;to&nbsp;overwrite&nbsp;it,&nbsp;until&nbsp;the&nbsp;response&nbsp;is&nbsp;a&nbsp;final&nbsp;one.&nbsp;For&nbsp;the<br>
+final&nbsp;one,&nbsp;print&nbsp;a&nbsp;newline&nbsp;to&nbsp;preserve&nbsp;the&nbsp;finalized&nbsp;transcription.</tt></dd></dl>
+
+<dl><dt><a name="mic_input_parser-make_channel"><strong>make_channel</strong></a>(self, host, port)</dt><dd><tt>Creates&nbsp;an&nbsp;SSL&nbsp;channel&nbsp;with&nbsp;auth&nbsp;credentials&nbsp;from&nbsp;the&nbsp;environment.</tt></dd></dl>
+
+<dl><dt><a name="mic_input_parser-record_audio"><strong>record_audio</strong></a>(*args, **kwds)</dt><dd><tt>Opens&nbsp;a&nbsp;recording&nbsp;stream&nbsp;in&nbsp;a&nbsp;context&nbsp;manager.</tt></dd></dl>
+
+<dl><dt><a name="mic_input_parser-request_stream"><strong>request_stream</strong></a>(self, data_stream, rate, interim_results<font color="#909090">=True</font>)</dt><dd><tt>Yields&nbsp;`StreamingRecognizeRequest`s&nbsp;constructed&nbsp;from&nbsp;a&nbsp;recording&nbsp;audio<br>
+stream.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;data_stream:&nbsp;A&nbsp;generator&nbsp;that&nbsp;yields&nbsp;raw&nbsp;audio&nbsp;data&nbsp;to&nbsp;send.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;rate:&nbsp;The&nbsp;sampling&nbsp;rate&nbsp;in&nbsp;hertz.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;interim_results:&nbsp;Whether&nbsp;to&nbsp;return&nbsp;intermediate&nbsp;results,&nbsp;before&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;transcription&nbsp;is&nbsp;finalized.</tt></dd></dl>
+
+<dl><dt><a name="mic_input_parser-run"><strong>run</strong></a>(self)</dt><dd><tt>Run&nbsp;speech&nbsp;recognition&nbsp;script</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="threading.html#Thread">threading.Thread</a>:<br>
+<dl><dt><a name="mic_input_parser-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="mic_input_parser-getName"><strong>getName</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="mic_input_parser-isAlive"><strong>isAlive</strong></a>(self)</dt><dd><tt>Return&nbsp;whether&nbsp;the&nbsp;thread&nbsp;is&nbsp;alive.<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;returns&nbsp;True&nbsp;just&nbsp;before&nbsp;the&nbsp;<a href="#mic_input_parser-run">run</a>()&nbsp;method&nbsp;starts&nbsp;until&nbsp;just<br>
+after&nbsp;the&nbsp;<a href="#mic_input_parser-run">run</a>()&nbsp;method&nbsp;terminates.&nbsp;The&nbsp;module&nbsp;function&nbsp;enumerate()<br>
+returns&nbsp;a&nbsp;list&nbsp;of&nbsp;all&nbsp;alive&nbsp;threads.</tt></dd></dl>
+
+<dl><dt><a name="mic_input_parser-isDaemon"><strong>isDaemon</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="mic_input_parser-is_alive"><strong>is_alive</strong></a> = isAlive(self)</dt><dd><tt>Return&nbsp;whether&nbsp;the&nbsp;thread&nbsp;is&nbsp;alive.<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;returns&nbsp;True&nbsp;just&nbsp;before&nbsp;the&nbsp;<a href="#mic_input_parser-run">run</a>()&nbsp;method&nbsp;starts&nbsp;until&nbsp;just<br>
+after&nbsp;the&nbsp;<a href="#mic_input_parser-run">run</a>()&nbsp;method&nbsp;terminates.&nbsp;The&nbsp;module&nbsp;function&nbsp;enumerate()<br>
+returns&nbsp;a&nbsp;list&nbsp;of&nbsp;all&nbsp;alive&nbsp;threads.</tt></dd></dl>
+
+<dl><dt><a name="mic_input_parser-join"><strong>join</strong></a>(self, timeout<font color="#909090">=None</font>)</dt><dd><tt>Wait&nbsp;until&nbsp;the&nbsp;thread&nbsp;terminates.<br>
+&nbsp;<br>
+This&nbsp;blocks&nbsp;the&nbsp;calling&nbsp;thread&nbsp;until&nbsp;the&nbsp;thread&nbsp;whose&nbsp;<a href="#mic_input_parser-join">join</a>()&nbsp;method&nbsp;is<br>
+called&nbsp;terminates&nbsp;--&nbsp;either&nbsp;normally&nbsp;or&nbsp;through&nbsp;an&nbsp;unhandled&nbsp;exception<br>
+or&nbsp;until&nbsp;the&nbsp;optional&nbsp;timeout&nbsp;occurs.<br>
+&nbsp;<br>
+When&nbsp;the&nbsp;timeout&nbsp;argument&nbsp;is&nbsp;present&nbsp;and&nbsp;not&nbsp;None,&nbsp;it&nbsp;should&nbsp;be&nbsp;a<br>
+floating&nbsp;point&nbsp;number&nbsp;specifying&nbsp;a&nbsp;timeout&nbsp;for&nbsp;the&nbsp;operation&nbsp;in&nbsp;seconds<br>
+(or&nbsp;fractions&nbsp;thereof).&nbsp;As&nbsp;<a href="#mic_input_parser-join">join</a>()&nbsp;always&nbsp;returns&nbsp;None,&nbsp;you&nbsp;must&nbsp;call<br>
+<a href="#mic_input_parser-isAlive">isAlive</a>()&nbsp;after&nbsp;<a href="#mic_input_parser-join">join</a>()&nbsp;to&nbsp;decide&nbsp;whether&nbsp;a&nbsp;timeout&nbsp;happened&nbsp;--&nbsp;if&nbsp;the<br>
+thread&nbsp;is&nbsp;still&nbsp;alive,&nbsp;the&nbsp;<a href="#mic_input_parser-join">join</a>()&nbsp;call&nbsp;timed&nbsp;out.<br>
+&nbsp;<br>
+When&nbsp;the&nbsp;timeout&nbsp;argument&nbsp;is&nbsp;not&nbsp;present&nbsp;or&nbsp;None,&nbsp;the&nbsp;operation&nbsp;will<br>
+block&nbsp;until&nbsp;the&nbsp;thread&nbsp;terminates.<br>
+&nbsp;<br>
+A&nbsp;thread&nbsp;can&nbsp;be&nbsp;<a href="#mic_input_parser-join">join</a>()ed&nbsp;many&nbsp;times.<br>
+&nbsp;<br>
+<a href="#mic_input_parser-join">join</a>()&nbsp;raises&nbsp;a&nbsp;RuntimeError&nbsp;if&nbsp;an&nbsp;attempt&nbsp;is&nbsp;made&nbsp;to&nbsp;join&nbsp;the&nbsp;current<br>
+thread&nbsp;as&nbsp;that&nbsp;would&nbsp;cause&nbsp;a&nbsp;deadlock.&nbsp;It&nbsp;is&nbsp;also&nbsp;an&nbsp;error&nbsp;to&nbsp;<a href="#mic_input_parser-join">join</a>()&nbsp;a<br>
+thread&nbsp;before&nbsp;it&nbsp;has&nbsp;been&nbsp;started&nbsp;and&nbsp;attempts&nbsp;to&nbsp;do&nbsp;so&nbsp;raises&nbsp;the&nbsp;same<br>
+exception.</tt></dd></dl>
+
+<dl><dt><a name="mic_input_parser-setDaemon"><strong>setDaemon</strong></a>(self, daemonic)</dt></dl>
+
+<dl><dt><a name="mic_input_parser-setName"><strong>setName</strong></a>(self, name)</dt></dl>
+
+<dl><dt><a name="mic_input_parser-start"><strong>start</strong></a>(self)</dt><dd><tt>Start&nbsp;the&nbsp;thread's&nbsp;activity.<br>
+&nbsp;<br>
+It&nbsp;must&nbsp;be&nbsp;called&nbsp;at&nbsp;most&nbsp;once&nbsp;per&nbsp;thread&nbsp;object.&nbsp;It&nbsp;arranges&nbsp;for&nbsp;the<br>
+object's&nbsp;<a href="#mic_input_parser-run">run</a>()&nbsp;method&nbsp;to&nbsp;be&nbsp;invoked&nbsp;in&nbsp;a&nbsp;separate&nbsp;thread&nbsp;of&nbsp;control.<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;will&nbsp;raise&nbsp;a&nbsp;RuntimeError&nbsp;if&nbsp;called&nbsp;more&nbsp;than&nbsp;once&nbsp;on&nbsp;the<br>
+same&nbsp;thread&nbsp;object.</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="threading.html#Thread">threading.Thread</a>:<br>
+<dl><dt><strong>daemon</strong></dt>
+<dd><tt>A&nbsp;boolean&nbsp;value&nbsp;indicating&nbsp;whether&nbsp;this&nbsp;thread&nbsp;is&nbsp;a&nbsp;daemon&nbsp;thread&nbsp;(True)&nbsp;or&nbsp;not&nbsp;(False).<br>
+&nbsp;<br>
+This&nbsp;must&nbsp;be&nbsp;set&nbsp;before&nbsp;start()&nbsp;is&nbsp;called,&nbsp;otherwise&nbsp;RuntimeError&nbsp;is<br>
+raised.&nbsp;Its&nbsp;initial&nbsp;value&nbsp;is&nbsp;inherited&nbsp;from&nbsp;the&nbsp;creating&nbsp;thread;&nbsp;the<br>
+main&nbsp;thread&nbsp;is&nbsp;not&nbsp;a&nbsp;daemon&nbsp;thread&nbsp;and&nbsp;therefore&nbsp;all&nbsp;threads&nbsp;created&nbsp;in<br>
+the&nbsp;main&nbsp;thread&nbsp;default&nbsp;to&nbsp;daemon&nbsp;=&nbsp;False.<br>
+&nbsp;<br>
+The&nbsp;entire&nbsp;Python&nbsp;program&nbsp;exits&nbsp;when&nbsp;no&nbsp;alive&nbsp;non-daemon&nbsp;threads&nbsp;are<br>
+left.</tt></dd>
+</dl>
+<dl><dt><strong>ident</strong></dt>
+<dd><tt>Thread&nbsp;identifier&nbsp;of&nbsp;this&nbsp;thread&nbsp;or&nbsp;None&nbsp;if&nbsp;it&nbsp;has&nbsp;not&nbsp;been&nbsp;started.<br>
+&nbsp;<br>
+This&nbsp;is&nbsp;a&nbsp;nonzero&nbsp;integer.&nbsp;See&nbsp;the&nbsp;thread.get_ident()&nbsp;function.&nbsp;Thread<br>
+identifiers&nbsp;may&nbsp;be&nbsp;recycled&nbsp;when&nbsp;a&nbsp;thread&nbsp;exits&nbsp;and&nbsp;another&nbsp;thread&nbsp;is<br>
+created.&nbsp;The&nbsp;identifier&nbsp;is&nbsp;available&nbsp;even&nbsp;after&nbsp;the&nbsp;thread&nbsp;has&nbsp;exited.</tt></dd>
+</dl>
+<dl><dt><strong>name</strong></dt>
+<dd><tt>A&nbsp;string&nbsp;used&nbsp;for&nbsp;identification&nbsp;purposes&nbsp;only.<br>
+&nbsp;<br>
+It&nbsp;has&nbsp;no&nbsp;semantics.&nbsp;Multiple&nbsp;threads&nbsp;may&nbsp;be&nbsp;given&nbsp;the&nbsp;same&nbsp;name.&nbsp;The<br>
+initial&nbsp;name&nbsp;is&nbsp;set&nbsp;by&nbsp;the&nbsp;constructor.</tt></dd>
+</dl>
+<hr>
+Data descriptors inherited from <a href="threading.html#_Verbose">threading._Verbose</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>division</strong> = _Feature((2, 2, 0, 'alpha', 2), (3, 0, 0, 'alpha', 0), 8192)</td></tr></table>
+</body></html>
