@@ -68,6 +68,7 @@ class fullWindow():
     	"""Updates widgets periodically or given user input."""
         #VOICE RECOGNITION QUEUE
         if not self.queue.empty():
+            self.speechText.speechText.config(text = "")
             command_type, command_val = self.queue.get()
             print command_type, command_val
             #SET MIRROR MOVEMENT DIRECTION
@@ -105,7 +106,7 @@ class fullWindow():
                 origin_address, final_address, travel_mode = command_val
                 self.trip.setWidget(origin_address, final_address, travel_mode)
                 self.showWidget(self.trip)
-                self.speechText.speechText.config(text = "You requested " + command_type)
+                self.speechText.echoAction(command_type, command_val)
             #SHOW NEWSBOX
             if command_type == "newsbox":
                 search_term = command_val
@@ -151,6 +152,9 @@ class fullWindow():
                     self.hideWidget(self.trip)
                 elif command_val == "direction":
                     self.hideWidget(self.direction)
+            #COMMAND ASSISTANCE
+            if command_type == "misheard":
+                self.speechText.misheard(command_val)
         #WEATHER/NEWS UPDATE
         if time.time() - self.time > 5*60: #if it's been 5 minutes, check weather again
             self.weather.updateWeather(self.address)

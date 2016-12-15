@@ -191,7 +191,10 @@ class mic_input_parser(Thread):
         final one, print a newline to preserve the finalized transcription.
         """
         num_chars_printed = 0
+        counter = 0
         for resp in recognize_stream:
+            print(counter)
+            counter += 1
             if resp.error.code != code_pb2.OK:
                 raise RuntimeError('Server error: ' + resp.error.message)
 
@@ -258,6 +261,8 @@ class mic_input_parser(Thread):
                         city_name = split_command[len(split_command)-1] #assumes city name is last word
                         self.speechQueue.put(("weather", city_name)) #assumes city is one word
                         print(city_name)
+                    else:
+                        self.speechQueue.put(("misheard", "weather"))
                 #CHANGE TIMEZONE				
                 elif "zone" in command.lower(): #ie "change timezone to Madrid, Spain"
                     if "to" in command:
@@ -265,6 +270,8 @@ class mic_input_parser(Thread):
                         # city_name = split_command[len(split_command)-2]
                         address = split_command[len(split_command)-1]
                         self.speechQueue.put(("timezone", address))
+                    else:
+                        self.speechQueue.put(("misheard", "timezone"))
                 #GET TRIP INFORMATION				
                 elif "trip" in command.lower(): #ie "length of trip from A to B"
                     if "from" in command and "to" in command:
@@ -282,6 +289,8 @@ class mic_input_parser(Thread):
                         print(origin_address)
                         print(final_address)
                         self.speechQueue.put(("trip", [origin_address, final_address, travel_mode]))
+                    else:
+                        self.speechQueue.put(("misheard", "trip"))
                 #GET CHORO MAP
                 elif "box" in command.lower(): #ie "put bob in NewsBox"
                     if "put " in command and " in " in command:
@@ -289,11 +298,17 @@ class mic_input_parser(Thread):
                         in_split_command = put_split_command[1].split(" in ")
                         search_term = in_split_command[len(in_split_command)-2] #three word list, want middle word
                         self.speechQueue.put(("newsbox", search_term))
+                    else:
+                        self.speechQueue.put(("misheard", "box"))
                 #CHANGE NEWS SOURCE
                 elif "news" in command.lower(): #ie "get news from BBC"
-                   for source in self.newsSources:
-                       if source in command:
-                           self.speechQueue.put(("news", self.newsSources[source]))
+                    sourceFound = False;
+                    for source in self.newsSources:
+                        if source in command:
+                            self.speechQueue.put(("news", self.newsSources[source]))
+                            sourceFound = True;
+                    if not sourceFound:
+                        self.speechQueue.put(("misheard", "news"))
                 #OPEN/CLOSE MIRROR
                 elif "open" in command:
                     self.speechQueue.put(("direction","open"))
