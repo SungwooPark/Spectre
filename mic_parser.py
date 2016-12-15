@@ -22,6 +22,8 @@ from threading import Thread
 from Queue import Queue
 from chat_bot import ChatBotInterface
 
+import time
+
 class mic_input_parser(Thread):
     """
     Threaded script that parses a microphone input recognized using Google Cloud Speech API
@@ -191,11 +193,19 @@ class mic_input_parser(Thread):
         final one, print a newline to preserve the finalized transcription.
         """
         num_chars_printed = 0
+
+        counter = 0
+
+        timeout = time.time() + 30
         for resp in recognize_stream:
+            print('recognize_stream: ')
+            print(recognize_stream)
             if resp.error.code != code_pb2.OK:
                 raise RuntimeError('Server error: ' + resp.error.message)
 
             if not resp.results:
+                print('if not resp.result part...' + str(counter))
+                counter += 1
                 continue
 
             # Display the top transcription
@@ -208,13 +218,16 @@ class mic_input_parser(Thread):
                 # If the previous result was longer than this one, we need to print
                 # some extra spaces to overwrite the previous result
                 overwrite_chars = ' ' * max(0, num_chars_printed - len(transcript))
+                print('intermediate printing step...' + str(counter))
+                counter += 1
 
                 sys.stdout.write(transcript + overwrite_chars + '\r')
                 sys.stdout.flush()
 
                 num_chars_printed = len(transcript)
-
             else:
+                print('final command step...' + str(counter))
+                counter += 1
                 print(transcript)
 
                 #Put response into queue for use in Spectre Gui
@@ -300,6 +313,10 @@ class mic_input_parser(Thread):
                 elif "close" in command:
                     self.speechQueue.put(("direction","closed"))
 
+                if time.time() > timeout:
+                    print('timeout break')
+                    break
+
                 # Exit recognition if any of the transcribed phrases could be
                 # one of our keywords.
                 if re.search(r'\b(exit|quit)\b', transcript, re.I):
@@ -307,6 +324,7 @@ class mic_input_parser(Thread):
                     break
 
                 num_chars_printed = 0
+        print('finished for loop')
 
     def run(self):
         """
@@ -328,8 +346,9 @@ class mic_input_parser(Thread):
 
                 # Now, put the transcription responses to use.
                 try:
-                    self.listen_print_loop(recognize_stream)
-
+                    while True:
+                        self.listen_print_loop(recognize_stream)
+                        print('done???')
                     recognize_stream.cancel()
                 except face.CancellationError:
                     # This happens because of the interrupt handler
