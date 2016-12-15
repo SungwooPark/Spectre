@@ -16,7 +16,7 @@ class weather(Frame):
 		"""
 		Frame.__init__(self, master, bg = 'black')
 		#CREATE TEMP LABEL
-		self.weatherTemp = Label(self, font=('Helvetica',100), fg= text_color, bg="black",text='TEMP')
+		self.weatherTemp = Label(self, font=('Helvetica',80), fg= text_color, bg="black",text='TEMP')
 		self.weatherTemp.pack(side = TOP, anchor = NE)
 		#CREATE DESCRIPTION LABEL
 		self.weatherDescription = Label(self, font=('Helvetica',40), fg= text_color, bg="black",text='Description')

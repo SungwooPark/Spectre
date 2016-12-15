@@ -14,9 +14,9 @@ class clock(Frame):
 				text_color - string color name for font
 		"""
 		Frame.__init__(self, master, bg = 'black')
-		self.clockText = Label(self, font=('Helvetica',100), fg= text_color, bg="black",text='TIME')
+		self.clockText = Label(self, font=('Helvetica',80), fg= text_color, bg="black",text='TIME')
 		self.clockText.pack(side = TOP, anchor = W)
-		self.dayText = Label(self, font=('Helvetica',100), fg= text_color, bg="black",text='DAY')
+		self.dayText = Label(self, font=('Helvetica',80), fg= text_color, bg="black",text='DAY')
 		self.dayText.pack(side = TOP, anchor = W)
 		self.request = requests
 	def getCoordinates(self, address):

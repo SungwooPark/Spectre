@@ -32,20 +32,20 @@ class fullWindow():
         self.leftFrame = Frame(self.rootWin, background = 'black') #create first frame
         self.leftFrame.pack(expand=False, fill = 'both', side = LEFT) #put frame against LEFT side, fill frame in x and y directions
         self.rightFrame = Frame(self.rootWin, background = 'black') #create a second frame
-        self.rightFrame.pack(expand=False, fill = 'both', side = RIGHT) #put frame against RIGHT side, fill frame in x and y directions     
+        self.rightFrame.pack(expand=False, fill = 'both', side = LEFT) #put frame against RIGHT side, fill frame in x and y directions     
         
         #WIDGETS
         #DIRECTION
-        self.direction = direction(self.rightFrame, text_color) #create direction object in leftFrame
+        self.direction = direction(self.leftFrame, text_color) #create direction object in leftFrame
         #CLOCK
         self.address = "Needham, US"
         self.clock = clock(self.leftFrame, text_color) #create clock object in rightFrame
         self.clock.pack(side = TOP , anchor = NW) #put clock object in frame (against RIGHT side)
         self.timezoneDiff = self.clock.getTimezoneDiff(self.address)
         #WEATHER
-        self.weather = weather(self.rightFrame, text_color) #create clock object in rightFrame
+        self.weather = weather(self.leftFrame, text_color) #create clock object in rightFrame
         #NEWS
-        self.news = news(self.rightFrame, text_color)
+        self.news = news(self.leftFrame, text_color)
         self.newsSources = self.news.getSources() #returns dictionary, dict[name] = id
         # self.newsSources = None
         self.newsOutlet = "cnn" #default news source
@@ -56,7 +56,7 @@ class fullWindow():
         self.queue = Queue()
         self.speech = mic_input_parser(self.queue, self.newsSources)
         #TRIP DISTANCE/DURATION
-        self.trip = trip(self.rightFrame, text_color)
+        self.trip = trip(self.leftFrame, text_color)
         #NEWSBOX
         #self.newsbox = newsBox(self.rightFrame, text_color)
 
@@ -172,8 +172,8 @@ class fullWindow():
         for widget in self.temp_widget_list: #bc we don't have many widgets and this makes it so we don't have
             widget.pack_forget() #to remember the current visible widget which we now need to make invisible
         for widget in self.pinned_widgets:
-            widget.pack(side = BOTTOM, anchor = NE)
-        new_widget.pack(side = TOP, anchor = NE) #this will also move a pinned widget up to the top right (focus)
+            widget.pack(side = BOTTOM, anchor = SW)
+        new_widget.pack(side = TOP, anchor = SW) #this will also move a pinned widget up to the top right (focus)
 
     def hideWidget(self, selected_widget):
     	"""Makes specified widget invisible in "focus" spot.
@@ -182,7 +182,7 @@ class fullWindow():
         if selected_widget not in self.pinned_widgets:
             selected_widget.pack_forget()
         else: #if it's in self.pinned_widgets
-            selected_widget.pack(side = BOTTOM, anchor = NE) #put pinned widget back at bottom
+            selected_widget.pack(side = BOTTOM, anchor = SW) #put pinned widget back at bottom
 
     def pinWidget(self, pinned_widget): #just removes it from temporary widget list
     	"""Adds specified widget to list of pinned widgets and shows it at the bottom right corner of screen until widget is actively removed.
@@ -191,7 +191,7 @@ class fullWindow():
     	if pinned_widget not in self.pinned_widgets:
             self.temp_widget_list.remove(pinned_widget)
             self.pinned_widgets.append(pinned_widget)
-        pinned_widget.pack(side = BOTTOM, anchor = NE) #put pinned widget at bottom right of screen
+        pinned_widget.pack(side = BOTTOM, anchor = NW) #put pinned widget at bottom right of screen
 
     def unPinWidget(self, unpinned_widget): #just adds it back to temporary widget list
     	"""Removes specified widget from list of pinned widgets and stops showing it at the bottom right corner of screen.
